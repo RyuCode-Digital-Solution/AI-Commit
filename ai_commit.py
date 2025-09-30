@@ -34,7 +34,7 @@ class AICommit:
             if not self.api_key:
                 raise ValueError("Set GEMINI_API_KEY environment variable")
             genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel('gemini-pro')
+            self.model = genai.GenerativeModel('gemini-2.5-flash')
             
         elif self.ai_provider == "chatgpt":
             if not OPENAI_AVAILABLE:
@@ -286,7 +286,7 @@ Berikan hanya commit message tanpa penjelasan tambahan."""
                 return response.text.strip()
             else:  # chatgpt
                 response = self.client.chat.completions.create(
-                    model="gpt-3.5-turbo",
+                    model="gpt-4o-mini",
                     messages=[
                         {"role": "system", "content": "You are a helpful assistant that generates git commit messages."},
                         {"role": "user", "content": prompt}
