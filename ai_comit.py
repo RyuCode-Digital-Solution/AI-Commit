@@ -20,7 +20,7 @@ except ImportError:
 class AICommit:
     def __init__(self, ai_provider: str = "gemini"):
         """
-        Initialize AI Commit tool
+        Initialize AI Commit
         
         Args:
             ai_provider: "gemini" atau "chatgpt"
@@ -300,7 +300,7 @@ Berikan hanya commit message tanpa penjelasan tambahan."""
     def run(self, push: bool = True, custom_message: Optional[str] = None, 
             specific_dir: Optional[str] = None, add_all: bool = False):
         """Main execution flow"""
-        print(f"🤖 AI Commit Tool (Provider: {self.ai_provider.upper()})")
+        print(f"🤖 AI Commit (Provider: {self.ai_provider.upper()})")
         print("=" * 50)
         
         # Select directory
