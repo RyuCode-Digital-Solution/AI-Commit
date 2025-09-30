@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+import platform
 from typing import Optional, List
 from pathlib import Path
 
@@ -16,6 +17,16 @@ try:
 except ImportError:
     OPENAI_AVAILABLE = False
 
+def clear_terminal():
+    """Clear terminal screen for all OS and terminals"""
+    os_name = platform.system()
+    
+    if os_name == "Windows":
+        os.system('cls' if os.name == 'nt' else 'clear')
+    else:
+        os.system('clear')
+    
+    print("\033[H\033[J", end="")
 
 class AICommit:
     def __init__(self, ai_provider: str = "gemini"):
@@ -341,6 +352,7 @@ Berikan hanya commit message tanpa penjelasan tambahan."""
     def run(self, push: bool = True, custom_message: Optional[str] = None, 
             specific_dir: Optional[str] = None, add_all: bool = False):
         """Main execution flow"""
+        clear_terminal()
         print(f"🤖 AI Commit (Provider: {self.ai_provider.upper()})")
         print("=" * 50)
         
