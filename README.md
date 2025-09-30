@@ -2,7 +2,7 @@
 
 > Alat commit otomatis berbasis AI yang menghasilkan commit message berkualitas dan mendukung multi-project workspace
 
-AI Commit Tool adalah utilitas Python yang memanfaatkan kekuatan AI (Gemini & ChatGPT) untuk menganalisis perubahan kode Anda dan menghasilkan commit message yang mengikuti standar conventional commits secara otomatis.
+AI Commit adalah utilitas Python yang memanfaatkan kekuatan AI (Gemini & ChatGPT) untuk menganalisis perubahan kode Anda dan menghasilkan commit message yang mengikuti standar conventional commits secara otomatis.
 
 ## ✨ Fitur Utama
 
@@ -207,7 +207,7 @@ python ai_commit.py
 
 **Output:**
 ```
-🤖 AI Commit Tool (Provider: GEMINI)
+🤖 AI Commit (Provider: GEMINI)
 ==================================================
 
 📁 Git repositories ditemukan:
