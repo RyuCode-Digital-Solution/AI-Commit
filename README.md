@@ -39,7 +39,7 @@ AI Commit Tool adalah utilitas Python yang memanfaatkan kekuatan AI (Gemini & Ch
 ```bash
 # Clone atau download repository ini
 git clone https://github.com/RyuCode-Digital-Solution/AI-Commit
-cd ai-commit-tool
+cd AI-Commit
 
 # Install required packages
 pip install -r requirements.txt
