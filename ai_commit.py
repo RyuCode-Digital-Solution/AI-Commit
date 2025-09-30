@@ -20,7 +20,7 @@ except ImportError:
 class AICommit:
     def __init__(self, ai_provider: str = "gemini"):
         """
-        Initialize AI Commit
+        Initialize AI Commit tool
         
         Args:
             ai_provider: "gemini" atau "chatgpt"
@@ -65,32 +65,56 @@ class AICommit:
         git_dir = Path(path) / ".git"
         return git_dir.exists()
 
-    def get_git_root(self, path: str) -> Optional[str]:
-        """Get git root directory"""
+    def check_has_changes(self, repo_path: str) -> bool:
+        """Quick check if repository has any changes"""
         success, output = self.run_git_command(
-            ["git", "rev-parse", "--show-toplevel"],
-            cwd=path
+            ["git", "status", "--porcelain"],
+            cwd=repo_path
         )
-        if success:
-            return output.strip()
-        return None
+        if success and output.strip():
+            return True
+        return False
 
-    def find_git_repos(self, base_path: str = ".") -> List[tuple[str, str]]:
-        """Find all git repositories in current directory"""
+    def find_git_repos(self, base_path: str = ".") -> List[tuple[str, str, bool]]:
+        """
+        Find all git repositories in parent directory
+        Returns: List of (name, path, has_changes)
+        """
         repos = []
         base_path = Path(base_path).resolve()
         
-        for item in base_path.iterdir():
+        # Get parent directory (where sibling folders are)
+        parent_path = base_path.parent
+        current_folder_name = base_path.name
+        
+        print(f"🔍 Scanning: {parent_path}")
+        
+        # Scan all folders in parent directory
+        for item in sorted(parent_path.iterdir()):
             if item.is_dir() and not item.name.startswith('.'):
                 if self.is_git_repo(str(item)):
-                    repos.append((item.name, str(item)))
+                    # Check if this folder has changes
+                    has_changes = self.check_has_changes(str(item))
+                    
+                    # Mark current folder
+                    display_name = item.name
+                    if item.name == current_folder_name:
+                        display_name = f"{item.name} (current)"
+                    
+                    repos.append((display_name, str(item), has_changes))
         
         return repos
 
     def select_directory(self, specific_dir: Optional[str] = None) -> Optional[str]:
         """Select directory to work with"""
         if specific_dir:
-            dir_path = Path(specific_dir).resolve()
+            # Handle relative path from parent
+            if specific_dir.startswith('../'):
+                current_path = Path('.').resolve()
+                dir_path = (current_path.parent / specific_dir.replace('../', '')).resolve()
+            else:
+                dir_path = Path(specific_dir).resolve()
+            
             if not dir_path.exists():
                 print(f"❌ Direktori '{specific_dir}' tidak ditemukan")
                 return None
@@ -99,32 +123,49 @@ class AICommit:
                 return None
             return str(dir_path)
         
-        # Auto-detect git repos
+        # Auto-detect git repos in parent directory
         repos = self.find_git_repos()
         
         if not repos:
-            # Check if current directory is git repo
-            if self.is_git_repo("."):
-                return os.getcwd()
-            print("❌ Tidak ada git repository ditemukan")
+            print("❌ Tidak ada git repository ditemukan di parent folder")
+            print("💡 Tip: Pastikan folder sibling adalah git repositories")
             return None
         
-        if len(repos) == 1:
-            print(f"📁 Menggunakan repository: {repos[0][0]}")
-            return repos[0][1]
-        
-        # Multiple repos found - show selection
+        # Show all repositories with change indicators
         print("\n📁 Git repositories ditemukan:")
-        for idx, (name, path) in enumerate(repos, 1):
-            print(f"   {idx}. {name}")
         
+        repos_with_changes = []
+        repos_without_changes = []
+        
+        for idx, (name, path, has_changes) in enumerate(repos, 1):
+            if has_changes:
+                repos_with_changes.append((idx, name, path))
+                print(f"   {idx}. {name} 🔴")
+            else:
+                repos_without_changes.append((idx, name, path))
+                print(f"   {idx}. {name} ⚪")
+        
+        print("\n   🔴 = Ada perubahan yang belum di-commit")
+        print("   ⚪ = Tidak ada perubahan")
+        
+        # Auto-select if only one repo has changes
+        if len(repos_with_changes) == 1 and len(repos) > 1:
+            auto_select = repos_with_changes[0]
+            response = input(f"\n💡 Hanya '{auto_select[1].replace(' (current)', '')}' yang ada perubahan. Gunakan? (Y/n): ").lower()
+            if response != 'n':
+                display_name = auto_select[1].replace(" (current)", "")
+                print(f"✅ Dipilih: {display_name}")
+                return auto_select[2]
+        
+        # Manual selection
         while True:
             try:
                 choice = input("\n❓ Pilih repository (nomor): ")
                 idx = int(choice) - 1
                 if 0 <= idx < len(repos):
                     selected = repos[idx]
-                    print(f"✅ Dipilih: {selected[0]}")
+                    display_name = selected[0].replace(" (current)", "")
+                    print(f"✅ Dipilih: {display_name}")
                     return selected[1]
                 else:
                     print("❌ Nomor tidak valid")
@@ -163,7 +204,7 @@ class AICommit:
         
         print(f"\n📝 Perubahan terdeteksi ({len(files)} file):")
         for idx, (status, filename) in enumerate(files, 1):
-            status_icon = "🆕" if "?" in status else "✏️" if "M" in status else "🗑️"
+            status_icon = "🆕" if "?" in status else "✏️" if "M" in status else "🗑️" if "D" in status else "📝"
             print(f"   {idx}. {status_icon} {filename}")
         
         if add_all:
@@ -300,7 +341,7 @@ Berikan hanya commit message tanpa penjelasan tambahan."""
     def run(self, push: bool = True, custom_message: Optional[str] = None, 
             specific_dir: Optional[str] = None, add_all: bool = False):
         """Main execution flow"""
-        print(f"🤖 AI Commit (Provider: {self.ai_provider.upper()})")
+        print(f"🤖 AI Commit Tool (Provider: {self.ai_provider.upper()})")
         print("=" * 50)
         
         # Select directory
@@ -308,7 +349,9 @@ Berikan hanya commit message tanpa penjelasan tambahan."""
         if not repo_path:
             return
         
-        print(f"\n📂 Working directory: {repo_path}")
+        repo_name = Path(repo_path).name
+        print(f"\n📂 Working directory: {repo_name}")
+        print(f"📍 Path: {repo_path}")
         
         # Auto git add
         if not self.auto_git_add(repo_path, add_all):
@@ -369,7 +412,7 @@ def main():
     parser.add_argument(
         "-d", "--dir",
         type=str,
-        help="Specific directory/folder untuk commit"
+        help="Specific directory/folder untuk commit (gunakan ../FolderName untuk sibling folders)"
     )
     parser.add_argument(
         "-a", "--all",
