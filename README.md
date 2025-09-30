@@ -42,17 +42,7 @@ git clone https://github.com/RyuCode-Digital-Solution/AI-Commit
 cd ai-commit-tool
 
 # Install required packages
-pip install google-generativeai openai
-
-# Atau gunakan requirements.txt (jika tersedia)
 pip install -r requirements.txt
-```
-
-### Membuat requirements.txt (Opsional)
-
-```txt
-google-generativeai>=0.3.0
-openai>=1.0.0
 ```
 
 ## 🔑 Konfigurasi
