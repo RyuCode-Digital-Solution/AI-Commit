@@ -1173,6 +1173,7 @@ Kontribusi selalu welcome!
 - 🗑️ Deleted file icon
 
 ### CLI Version
+![CLI Version](https://github.com/user-attachments/assets/60e0027d-c407-465d-90e8-8e130d2241ea)
 
 **Terminal Output:**
 
