@@ -698,7 +698,7 @@ class AICommitGUI:
                     raise ValueError("GEMINI_API_KEY not set")
                 
                 genai.configure(api_key=api_key)
-                model = genai.GenerativeModel('gemini-2.0-flash-exp')
+                model = genai.GenerativeModel('gemini-2.5-flash')
                 
                 prompt = f"""Generate a clear commit message following conventional commits format.
 
