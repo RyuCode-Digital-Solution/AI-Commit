@@ -1155,10 +1155,9 @@ Kontribusi selalu welcome!
 ## 📸 Screenshots
 
 ### GUI Version
-
-**Main Window:**
 ![GUI Version](https://github.com/user-attachments/assets/2387bd34-3e15-4ce8-9c93-2ea69e3281b7)
 
+**Main Window:**
 - Clean and modern interface
 - Auto-scan on startup
 - Visual file selection
