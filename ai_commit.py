@@ -17,6 +17,9 @@ try:
 except ImportError:
     OPENAI_AVAILABLE = False
 
+GEMINI_MODEL = "gemini-2.5-flash"
+OPENAI_MODEL = "gpt-4o-mini"
+
 def clear_terminal():
     """Clear terminal screen for all OS and terminals"""
     os_name = platform.system()
@@ -34,7 +37,7 @@ class AICommit:
         Initialize AI Commit
         
         Args:
-            ai_provider: "gemini" atau "chatgpt"
+            ai_provider: "Gemini" or "ChatGPT"
         """
         self.ai_provider = ai_provider.lower()
         
@@ -45,7 +48,7 @@ class AICommit:
             if not self.api_key:
                 raise ValueError("Set GEMINI_API_KEY environment variable")
             genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel('gemini-2.5-flash')
+            self.model = genai.GenerativeModel(GEMINI_MODEL)
             
         elif self.ai_provider == "chatgpt":
             if not OPENAI_AVAILABLE:
@@ -55,7 +58,7 @@ class AICommit:
                 raise ValueError("Set OPENAI_API_KEY environment variable")
             self.client = OpenAI(api_key=self.api_key)
         else:
-            raise ValueError("AI provider harus 'gemini' atau 'chatgpt'")
+            raise ValueError("AI providers must be ‘Gemini’ or 'ChatGPT'")
 
     def run_git_command(self, command: list, cwd: Optional[str] = None) -> tuple[bool, str]:
         """Execute git command"""
@@ -127,10 +130,10 @@ class AICommit:
                 dir_path = Path(specific_dir).resolve()
             
             if not dir_path.exists():
-                print(f"❌ Direktori '{specific_dir}' tidak ditemukan")
+                print(f"❌ The directory '{specific_dir}' was not found")
                 return None
             if not self.is_git_repo(str(dir_path)):
-                print(f"❌ '{specific_dir}' bukan git repository")
+                print(f"❌ '{specific_dir}' is not a git repository")
                 return None
             return str(dir_path)
         
@@ -138,12 +141,12 @@ class AICommit:
         repos = self.find_git_repos()
         
         if not repos:
-            print("❌ Tidak ada git repository ditemukan di parent folder")
-            print("💡 Tip: Pastikan folder sibling adalah git repositories")
+            print("❌ No git repository found in the parent folder")
+            print("💡 Tip: Make sure the sibling folders are git repositories.")
             return None
         
         # Show all repositories with change indicators
-        print("\n📁 Git repositories ditemukan:")
+        print("\n📁 Git repositories found:")
         
         repos_with_changes = []
         repos_without_changes = []
@@ -156,32 +159,32 @@ class AICommit:
                 repos_without_changes.append((idx, name, path))
                 print(f"   {idx}. {name} ⚪")
         
-        print("\n   🔴 = Ada perubahan yang belum di-commit")
-        print("   ⚪ = Tidak ada perubahan")
+        print("\n   🔴 = There are changes that have not been committed")
+        print("   ⚪ = No changes")
         
         # Auto-select if only one repo has changes
         if len(repos_with_changes) == 1 and len(repos) > 1:
             auto_select = repos_with_changes[0]
-            response = input(f"\n💡 Hanya '{auto_select[1].replace(' (current)', '')}' yang ada perubahan. Gunakan? (Y/n): ").lower()
+            response = input(f"\n💡 Only '{auto_select[1].replace(' (current)', '')}' has been changed. Use it? (Y/n): ").lower()
             if response != 'n':
                 display_name = auto_select[1].replace(" (current)", "")
-                print(f"✅ Dipilih: {display_name}")
+                print(f"✅ Selected: {display_name}")
                 return auto_select[2]
         
         # Manual selection
         while True:
             try:
-                choice = input("\n❓ Pilih repository (nomor): ")
+                choice = input("\n❓ Select repository (number): ")
                 idx = int(choice) - 1
                 if 0 <= idx < len(repos):
                     selected = repos[idx]
                     display_name = selected[0].replace(" (current)", "")
-                    print(f"✅ Dipilih: {display_name}")
+                    print(f"✅ Selected: {display_name}")
                     return selected[1]
                 else:
-                    print("❌ Nomor tidak valid")
+                    print("❌ Invalid number")
             except (ValueError, KeyboardInterrupt):
-                print("\n❌ Dibatalkan")
+                print("\n❌ Cancelled")
                 return None
 
     def get_changed_files(self, repo_path: str) -> Optional[List[str]]:
@@ -210,31 +213,31 @@ class AICommit:
         files = self.get_changed_files(repo_path)
         
         if not files:
-            print("❌ Tidak ada perubahan yang terdeteksi")
+            print("❌ No changes detected")
             return False
         
-        print(f"\n📝 Perubahan terdeteksi ({len(files)} file):")
+        print(f"\n📝 Changes detected ({len(files)} files):")
         for idx, (status, filename) in enumerate(files, 1):
             status_icon = "🆕" if "?" in status else "✏️" if "M" in status else "🗑️" if "D" in status else "📝"
             print(f"   {idx}. {status_icon} {filename}")
         
         if add_all:
-            print("\n➕ Menambahkan semua file...")
+            print("\n➕ Adding all files...")
             success, output = self.run_git_command(["git", "add", "."], cwd=repo_path)
         else:
-            response = input("\n❓ Add semua file? (y/n/select): ").lower()
+            response = input("\n❓ Add all files? (y/n/select): ").lower()
             
             if response == 'y':
                 success, output = self.run_git_command(["git", "add", "."], cwd=repo_path)
             elif response == 'select':
-                print("📌 Masukkan nomor file yang ingin di-add (pisahkan dengan koma, contoh: 1,3,5)")
-                selection = input("   Nomor: ")
+                print("📌 Enter the file numbers you want to add (separate them with commas, for example: 1,3,5)")
+                selection = input("   Number: ")
                 try:
                     indices = [int(x.strip()) - 1 for x in selection.split(',')]
                     selected_files = [files[i][1] for i in indices if 0 <= i < len(files)]
                     
                     if not selected_files:
-                        print("❌ Tidak ada file yang valid")
+                        print("❌ No valid files")
                         return False
                     
                     success, output = self.run_git_command(
@@ -242,24 +245,24 @@ class AICommit:
                         cwd=repo_path
                     )
                 except (ValueError, IndexError):
-                    print("❌ Input tidak valid")
+                    print("❌ Invalid input")
                     return False
             else:
-                print("❌ Dibatalkan")
+                print("❌ Cancelled")
                 return False
         
         if not success:
-            print(f"❌ Git add gagal: {output}")
+            print(f"❌ Git add failed: {output}")
             return False
         
-        print("✅ File berhasil di-add!")
+        print("✅ File successfully added!")
         return True
 
     def get_git_diff(self, repo_path: str) -> Optional[str]:
         """Get staged changes"""
         success, diff = self.run_git_command(["git", "diff", "--cached"], cwd=repo_path)
         if not success or not diff.strip():
-            print("❌ Tidak ada perubahan yang di-stage.")
+            print("❌ No changes have been staged.")
             return None
         return diff
 
@@ -275,21 +278,17 @@ class AICommit:
 
     def generate_commit_message(self, diff: str) -> Optional[str]:
         """Generate commit message using AI"""
-        prompt = f"""Berdasarkan git diff berikut, buatkan commit message yang jelas dan deskriptif mengikuti conventional commits format.
+        prompt = f"""Generate a clear commit message following conventional commits format.
 
 Git diff:
 ```
 {diff[:3000]}
 ```
 
-Buatkan commit message dengan format:
-<type>(<scope>): <subject>
+Format: <type>(<scope>): <subject>
 
-<body (opsional)>
-
-Type bisa: feat, fix, docs, style, refactor, test, chore
-Gunakan bahasa Inggris, singkat dan jelas.
-Berikan hanya commit message tanpa penjelasan tambahan."""
+Types: feat, fix, docs, style, refactor, test, chore
+Use English, be concise. Return only the commit message."""
 
         try:
             if self.ai_provider == "gemini":
@@ -297,7 +296,7 @@ Berikan hanya commit message tanpa penjelasan tambahan."""
                 return response.text.strip()
             else:  # chatgpt
                 response = self.client.chat.completions.create(
-                    model="gpt-4o-mini",
+                    model=OPENAI_MODEL,
                     messages=[
                         {"role": "system", "content": "You are a helpful assistant that generates git commit messages."},
                         {"role": "user", "content": prompt}
@@ -313,7 +312,7 @@ Berikan hanya commit message tanpa penjelasan tambahan."""
     def commit_and_push(self, repo_path: str, message: str, push: bool = True) -> bool:
         """Commit changes and optionally push"""
         # Commit
-        print(f"\n📝 Committing dengan message:")
+        print(f"\n📝 Committing with message:")
         print(f"   {message}\n")
         
         success, output = self.run_git_command(
@@ -321,10 +320,10 @@ Berikan hanya commit message tanpa penjelasan tambahan."""
             cwd=repo_path
         )
         if not success:
-            print(f"❌ Commit gagal: {output}")
+            print(f"❌ Commit failed: {output}")
             return False
         
-        print("✅ Commit berhasil!")
+        print("✅ Commit successful!")
         
         if not push:
             return True
@@ -332,21 +331,21 @@ Berikan hanya commit message tanpa penjelasan tambahan."""
         # Get current branch
         branch = self.get_current_branch(repo_path)
         if not branch:
-            print("❌ Gagal mendapatkan nama branch")
+            print("❌ Failed to get branch name")
             return False
         
         # Push
-        print(f"\n🚀 Pushing ke origin/{branch}...")
+        print(f"\n🚀 Pushing to origin/{branch}...")
         success, output = self.run_git_command(
             ["git", "push", "origin", branch],
             cwd=repo_path
         )
         
         if not success:
-            print(f"❌ Push gagal: {output}")
+            print(f"❌ Push failed: {output}")
             return False
         
-        print("✅ Push berhasil!")
+        print("✅ Push successful!")
         return True
 
     def run(self, push: bool = True, custom_message: Optional[str] = None, 
@@ -377,25 +376,25 @@ Berikan hanya commit message tanpa penjelasan tambahan."""
         # Generate or use custom message
         if custom_message:
             commit_message = custom_message
-            print(f"\n📝 Menggunakan custom message: {commit_message}")
+            print(f"\n📝 Using a custom message: {commit_message}")
         else:
-            print("\n🔍 Menganalisis perubahan...")
+            print("\n🔍 Analyzing changes...")
             commit_message = self.generate_commit_message(diff)
             
             if not commit_message:
                 return
             
             # Confirm
-            print(f"\n💡 AI menyarankan commit message:")
+            print(f"\n💡 AI suggests commit message:")
             print(f"   {commit_message}")
             
-            response = input("\n❓ Gunakan message ini? (y/n/edit): ").lower()
+            response = input("\n❓ Use this message? (y/n/edit): ").lower()
             
             if response == 'n':
-                print("❌ Dibatalkan.")
+                print("❌ Cancelled.")
                 return
             elif response == 'edit':
-                commit_message = input("📝 Masukkan commit message baru: ")
+                commit_message = input("📝 Enter a new commit message: ")
         
         # Commit and push
         self.commit_and_push(repo_path, commit_message, push)
@@ -414,7 +413,7 @@ def main():
     parser.add_argument(
         "--no-push",
         action="store_true",
-        help="Commit saja tanpa push"
+        help="Just commit without pushing"
     )
     parser.add_argument(
         "-m", "--message",
@@ -424,12 +423,12 @@ def main():
     parser.add_argument(
         "-d", "--dir",
         type=str,
-        help="Specific directory/folder untuk commit (gunakan ../FolderName untuk sibling folders)"
+        help="Specific directory/folder for commit (use ../FolderName for sibling folders)"
     )
     parser.add_argument(
         "-a", "--all",
         action="store_true",
-        help="Add semua file tanpa konfirmasi"
+        help="Add all files without confirmation"
     )
     
     args = parser.parse_args()

@@ -18,6 +18,8 @@ try:
 except ImportError:
     OPENAI_AVAILABLE = False
 
+GEMINI_MODEL = "gemini-2.5-flash"
+OPENAI_MODEL = "gpt-4o-mini"
 
 class AICommitGUI:
     def __init__(self, root):
@@ -698,7 +700,7 @@ class AICommitGUI:
                     raise ValueError("GEMINI_API_KEY not set")
                 
                 genai.configure(api_key=api_key)
-                model = genai.GenerativeModel('gemini-2.5-flash')
+                model = genai.GenerativeModel(GEMINI_MODEL)
                 
                 prompt = f"""Generate a clear commit message following conventional commits format.
 
@@ -724,7 +726,7 @@ Use English, be concise. Return only the commit message."""
                 
                 client = OpenAI(api_key=api_key)
                 response = client.chat.completions.create(
-                    model="gpt-4o-mini",
+                    model=OPENAI_MODEL,
                     messages=[
                         {"role": "system", "content": "You generate git commit messages."},
                         {"role": "user", "content": f"Generate commit message for:\n{diff[:3000]}"}
