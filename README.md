@@ -5,6 +5,7 @@
 AI Commit adalah utilitas Python yang memanfaatkan kekuatan AI (Gemini & ChatGPT) untuk menganalisis perubahan kode Anda dan menghasilkan commit message yang mengikuti standar conventional commits secara otomatis.
 
 **Tersedia dalam 2 versi:**
+
 - 🖥️ **CLI Version** - Command line interface untuk terminal lovers
 - 🎨 **GUI Version** - Graphical interface dengan Tkinter (no additional dependencies!)
 
@@ -40,6 +41,7 @@ workspace/
 ```
 
 **Cara Kerja:**
+
 - Tool dijalankan dari dalam folder `AI-Commit`
 - Otomatis scan **parent directory** untuk menemukan semua git repositories (Folder1, Folder2, Folder3)
 - Deteksi folder mana yang punya perubahan (ditandai dengan 🔴)
@@ -115,16 +117,45 @@ python ai_commit_gui.py
 5. **⚙️ Easy Settings** - Toggle AI provider dan auto-push
 6. **✅ Batch Selection** - Select all atau clear selection dengan mudah
 7. **🎨 Modern UI** - Clean and intuitive interface
+8. **🌙 Dark Mode** - Toggle antara light dan dark theme
+9. **📝 Smart File Matching** - Otomatis mencari file yang mirip jika terjadi error
+10. **🔄 Auto Refresh** - File list otomatis refresh setelah staging
 
 ### Workflow GUI
 
 1. **Buka aplikasi** → Auto-scan akan berjalan
 2. **Pilih repository** dari dropdown (yang 🔴 ada perubahan)
-3. **Pilih files** yang ingin di-commit (atau Select All)
-4. **Klik "➕ Add"** untuk stage files
-5. **Klik "🤖 Generate"** untuk AI commit message (atau tulis manual)
-6. **Review message** di text area
-7. **Klik "✅ Commit & Push"** untuk commit dan push
+3. **Toggle Dark Mode** jika diperlukan (🌙 checkbox di kanan atas)
+4. **Pilih files** yang ingin di-commit (atau Select All)
+5. **Klik "➕ Add to Stage"** untuk stage files
+6. **Klik "🤖 Generate with AI"** untuk AI commit message (atau tulis manual)
+7. **Review message** di text area
+8. **Klik "✅ Commit & Push"** untuk commit dan push
+
+### Dark Mode
+
+GUI mendukung **light dan dark theme** untuk kenyamanan mata Anda:
+
+**Cara Mengaktifkan:**
+
+- Cek/Uncek checkbox **"🌙 Dark Mode"** di pojok kanan atas
+- Theme akan langsung berubah untuk semua komponen
+
+**Dark Theme Features:**
+
+- Background gelap (#1e1e1e) yang nyaman untuk mata
+- Text terang (#ffffff) untuk kontras optimal
+- Frame abu-abu (#2d2d2d) untuk pemisahan yang jelas
+- Accent biru gelap (#0e639c) untuk highlight
+- Cocok untuk bekerja malam hari atau ruangan gelap
+
+**Light Theme Features:**
+
+- Background terang (#f0f0f0) untuk ruangan terang
+- Text hitam (#000000) untuk ketajaman maksimal
+- Frame putih (#ffffff) untuk tampilan bersih
+- Accent biru cerah (#0078d4) untuk interaksi
+- Cocok untuk bekerja siang hari atau ruangan terang
 
 ## 🖥️ CLI Version
 
@@ -133,12 +164,14 @@ python ai_commit_gui.py
 ### 1. Dapatkan API Key
 
 #### Gemini API Key (Gratis - Recommended)
+
 1. Kunjungi [Google AI Studio](https://makersuite.google.com/app/apikey)
 2. Login dengan akun Google
 3. Klik "Create API Key"
 4. Copy API key yang dihasilkan
 
 #### OpenAI API Key (Berbayar)
+
 1. Kunjungi [OpenAI Platform](https://platform.openai.com/api-keys)
 2. Login atau buat akun
 3. Klik "Create new secret key"
@@ -149,12 +182,14 @@ python ai_commit_gui.py
 #### Linux/Mac
 
 **Temporary (untuk session saat ini):**
+
 ```bash
 export GEMINI_API_KEY="your-gemini-api-key-here"
 export OPENAI_API_KEY="your-openai-api-key-here"
 ```
 
 **Permanent (tambahkan ke ~/.bashrc atau ~/.zshrc):**
+
 ```bash
 echo 'export GEMINI_API_KEY="your-gemini-api-key-here"' >> ~/.bashrc
 echo 'export OPENAI_API_KEY="your-openai-api-key-here"' >> ~/.bashrc
@@ -164,18 +199,21 @@ source ~/.bashrc
 #### Windows
 
 **Command Prompt (Temporary):**
+
 ```cmd
 set GEMINI_API_KEY=your-gemini-api-key-here
 set OPENAI_API_KEY=your-openai-api-key-here
 ```
 
 **PowerShell (Temporary):**
+
 ```powershell
 $env:GEMINI_API_KEY="your-gemini-api-key-here"
 $env:OPENAI_API_KEY="your-openai-api-key-here"
 ```
 
 **Permanent (System Environment Variables):**
+
 1. Buka "System Properties" → "Environment Variables"
 2. Klik "New" di User Variables
 3. Variable name: `GEMINI_API_KEY`
@@ -201,6 +239,7 @@ python ai_commit_gui.py
 ```
 
 **Keuntungan GUI:**
+
 - ✅ Tidak perlu hafal command line options
 - ✅ Visual file selection dengan checkbox
 - ✅ Real-time preview commit message
@@ -215,6 +254,7 @@ python ai_commit.py
 ```
 
 **Keuntungan CLI:**
+
 - ✅ Cepat dan efisien untuk power users
 - ✅ Bisa di-script dan di-automate
 - ✅ Remote-friendly (via SSH)
@@ -222,16 +262,17 @@ python ai_commit.py
 
 ### Perbandingan GUI vs CLI
 
-| Fitur | GUI | CLI |
-|-------|-----|-----|
-| Ease of Use | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
-| Speed | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Visual Feedback | ⭐⭐⭐⭐⭐ | ⭐⭐ |
-| Automation | ⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Remote Access | ❌ | ✅ |
-| Beginner Friendly | ✅ | ⚠️ |
+| Fitur             | GUI        | CLI        |
+| ----------------- | ---------- | ---------- |
+| Ease of Use       | ⭐⭐⭐⭐⭐ | ⭐⭐⭐     |
+| Speed             | ⭐⭐⭐     | ⭐⭐⭐⭐⭐ |
+| Visual Feedback   | ⭐⭐⭐⭐⭐ | ⭐⭐       |
+| Automation        | ⭐⭐       | ⭐⭐⭐⭐⭐ |
+| Remote Access     | ❌         | ✅         |
+| Beginner Friendly | ✅         | ⚠️         |
 
 **Rekomendasi:**
+
 - 🎨 **Gunakan GUI** jika: pemula, prefer visual, bekerja local
 - 🖥️ **Gunakan CLI** jika: power user, automation, remote work
 
@@ -304,6 +345,7 @@ $ python ai_commit.py
 ### 1. Auto-Detect Changes di Parent Folder
 
 Tool akan **scan parent directory** dan menampilkan:
+
 - ✅ Semua git repositories yang ditemukan
 - 🔴 Indicator untuk folder yang punya perubahan
 - ⚪ Indicator untuk folder yang tidak ada perubahan
@@ -312,6 +354,7 @@ Tool akan **scan parent directory** dan menampilkan:
 ### 2. Smart Selection
 
 Jika hanya 1 folder yang punya perubahan, tool akan:
+
 - Otomatis suggest folder tersebut
 - Tanya konfirmasi (Y/n)
 - Langsung lanjut jika user setuju
@@ -319,6 +362,7 @@ Jika hanya 1 folder yang punya perubahan, tool akan:
 ### 3. Selective File Add
 
 Setelah memilih repository:
+
 ```
 📝 Perubahan terdeteksi (5 file):
    1. ✏️ modified_file.py
@@ -331,6 +375,7 @@ Setelah memilih repository:
 ```
 
 **Opsi:**
+
 - `y` - Add semua file
 - `n` - Batalkan
 - `select` - Pilih file tertentu (input: 1,2,5)
@@ -338,6 +383,7 @@ Setelah memilih repository:
 ### 4. AI-Generated Commit Message
 
 AI menganalisis `git diff` dan generate message dengan format:
+
 ```
 <type>(<scope>): <subject>
 
@@ -345,6 +391,7 @@ AI menganalisis `git diff` dan generate message dengan format:
 ```
 
 Dengan interactive options:
+
 - `y` - Gunakan message AI
 - `n` - Batalkan
 - `edit` - Edit manual
@@ -423,6 +470,7 @@ python ai_commit.py
 ```
 
 Output:
+
 ```
 📁 Git repositories ditemukan:
    1. Folder1 🔴
@@ -461,14 +509,14 @@ select
 
 ## 🛠️ Command Line Options
 
-| Option | Short | Description | Example |
-|--------|-------|-------------|---------|
-| `--provider` | - | Pilih AI provider (gemini/chatgpt) | `--provider chatgpt` |
-| `--dir` | `-d` | Spesifikasi direktori target | `--dir ../Folder1` |
-| `--all` | `-a` | Add semua file tanpa konfirmasi | `--all` |
-| `--message` | `-m` | Custom commit message (skip AI) | `-m "fix: bug"` |
-| `--no-push` | - | Commit tanpa push | `--no-push` |
-| `--help` | `-h` | Tampilkan help message | `--help` |
+| Option       | Short | Description                        | Example              |
+| ------------ | ----- | ---------------------------------- | -------------------- |
+| `--provider` | -     | Pilih AI provider (gemini/chatgpt) | `--provider chatgpt` |
+| `--dir`      | `-d`  | Spesifikasi direktori target       | `--dir ../Folder1`   |
+| `--all`      | `-a`  | Add semua file tanpa konfirmasi    | `--all`              |
+| `--message`  | `-m`  | Custom commit message (skip AI)    | `-m "fix: bug"`      |
+| `--no-push`  | -     | Commit tanpa push                  | `--no-push`          |
+| `--help`     | `-h`  | Tampilkan help message             | `--help`             |
 
 ### Kombinasi Options
 
@@ -491,6 +539,7 @@ python ai_commit.py --provider gemini
 Tool ini menghasilkan commit message mengikuti standar [Conventional Commits](https://www.conventionalcommits.org/):
 
 ### Format
+
 ```
 <type>(<scope>): <subject>
 
@@ -527,6 +576,7 @@ test(utils): add unit tests for date formatter
 ### Problem: "GEMINI_API_KEY not found"
 
 **Solusi:**
+
 ```bash
 # Cek apakah sudah di-set
 echo $GEMINI_API_KEY  # Linux/Mac
@@ -540,6 +590,7 @@ set GEMINI_API_KEY=your-api-key  # Windows
 ### Problem: "Tidak ada git repository ditemukan"
 
 **Solusi:**
+
 1. Pastikan Anda menjalankan tool dari **dalam folder AI-Commit**
 2. Pastikan folder sibling (Folder1, Folder2, dll) adalah git repositories
 3. Cek dengan:
@@ -558,6 +609,7 @@ set GEMINI_API_KEY=your-api-key  # Windows
 ### Problem: "Tidak ada perubahan yang terdeteksi"
 
 **Solusi:**
+
 - Tool hanya detect **uncommitted changes**
 - Cek manual:
   ```bash
@@ -571,12 +623,14 @@ set GEMINI_API_KEY=your-api-key  # Windows
 **Kemungkinan penyebab:**
 
 **1. Tidak ada remote origin**
+
 ```bash
 cd ../Folder1
 git remote add origin https://github.com/username/repo.git
 ```
 
 **2. Authentication gagal**
+
 ```bash
 # Setup SSH key atau credentials
 git config credential.helper store
@@ -584,6 +638,7 @@ git push origin main  # input credentials sekali
 ```
 
 **3. Branch belum di-track**
+
 ```bash
 cd ../Folder1
 git push --set-upstream origin main
@@ -592,6 +647,7 @@ git push --set-upstream origin main
 ### Problem: "Import Error - google.generativeai not found"
 
 **Solusi:**
+
 ```bash
 # Pastikan di folder AI-Commit
 cd AI-Commit
@@ -609,6 +665,7 @@ pip install google-generativeai openai
 **Solusi:**
 
 **Linux:**
+
 ```bash
 # Install tkinter
 sudo apt-get install python3-tk  # Ubuntu/Debian
@@ -616,18 +673,21 @@ sudo yum install python3-tkinter  # CentOS/RHEL
 ```
 
 **macOS:**
+
 ```bash
 # Tkinter sudah included, tapi jika error:
 brew install python-tk
 ```
 
 **Windows:**
+
 - Tkinter sudah included dalam Python installer
 - Jika tidak ada, reinstall Python dan check "tcl/tk" option
 
 ### Problem: "GUI freeze saat generate message"
 
 **Solusi:**
+
 - Ini normal, AI sedang processing
 - GUI menggunakan threading jadi tidak freeze
 - Jika benar-benar freeze, coba:
@@ -640,6 +700,7 @@ brew install python-tk
 **Solusi:**
 
 Pastikan struktur folder Anda seperti ini:
+
 ```
 workspace/
 ├── Folder1/ (git repo)
@@ -650,6 +711,7 @@ workspace/
 ```
 
 Jalankan HARUS dari dalam `AI-Commit`:
+
 ```bash
 # BENAR ✅
 cd AI-Commit
@@ -663,6 +725,7 @@ python AI-Commit/ai_commit.py
 ### Problem: API Rate Limit
 
 **Solusi:**
+
 - **Gemini**: Gratis dengan limit harian (~60 requests/minute), tunggu atau upgrade
 - **OpenAI**: Top-up credit di https://platform.openai.com/account/billing
 
@@ -671,6 +734,7 @@ python AI-Commit/ai_commit.py
 ### Q: GUI atau CLI, mana yang lebih baik?
 
 **A:** Tergantung kebutuhan:
+
 - **GUI**: Lebih mudah untuk pemula, visual feedback, cocok untuk daily use
 - **CLI**: Lebih cepat, bisa di-automate, cocok untuk power users dan remote work
 
@@ -679,12 +743,14 @@ Anda bisa gunakan keduanya! GUI untuk commit biasa, CLI untuk scripting.
 ### Q: Apakah tool ini gratis?
 
 **A:** Tool-nya 100% gratis dan open source. Namun untuk AI:
+
 - **Gemini API**: Gratis dengan quota harian yang cukup (recommended)
 - **OpenAI API**: Berbayar, sekitar $0.002 per commit
 
 ### Q: Apakah data saya aman?
 
-**A:** 
+**A:**
+
 - ✅ Tool hanya mengirim **git diff** (perubahan code) ke AI
 - ✅ Tidak ada data yang disimpan di server
 - ✅ API key disimpan lokal di environment variable Anda
@@ -721,6 +787,7 @@ workspace/           ← Parent directory yang di-scan
 ### Q: Bisa tidak pakai AI? Manual saja?
 
 **A:** Ya bisa! Gunakan option `-m`:
+
 ```bash
 python ai_commit.py --dir ../Folder1 -m "your commit message"
 ```
@@ -728,6 +795,7 @@ python ai_commit.py --dir ../Folder1 -m "your commit message"
 ### Q: Bagaimana jika saya tidak puas dengan commit message AI?
 
 **A:**
+
 1. Pilih `edit` untuk menulis ulang
 2. Pilih `n` untuk batalkan dan coba lagi
 3. Switch provider: `--provider chatgpt` atau `--provider gemini`
@@ -736,6 +804,7 @@ python ai_commit.py --dir ../Folder1 -m "your commit message"
 ### Q: Apakah bisa integrasi dengan Git GUI?
 
 **A:** Tool ini CLI-based, tapi bisa dipanggil dari:
+
 - Git GUI yang support custom commands
 - Shell scripts
 - Git hooks (pre-commit, post-commit)
@@ -743,6 +812,7 @@ python ai_commit.py --dir ../Folder1 -m "your commit message"
 ### Q: Bisakah skip interactive mode untuk automation?
 
 **A:** Ya! Gunakan kombinasi `--all` dan `-m`:
+
 ```bash
 # Full automation
 python ai_commit.py --dir ../Folder1 --all -m "auto commit"
@@ -761,11 +831,13 @@ Untuk CI/CD atau automation scripts.
 ### Q: Apakah bisa commit multiple folders sekaligus?
 
 **A:** Tidak. Tool di-design untuk commit satu repository per execution. Tapi Anda bisa:
+
 1. Jalankan tool untuk Folder1
 2. Jalankan lagi untuk Folder2
 3. Dst.
 
 Atau buat bash script:
+
 ```bash
 #!/bin/bash
 cd AI-Commit
@@ -777,6 +849,7 @@ python ai_commit.py --dir ../Folder3 --all -m "update"
 ### Q: Bagaimana cara update tool ini?
 
 **A:**
+
 ```bash
 cd AI-Commit
 # Jika dari git repo
@@ -794,6 +867,7 @@ git pull origin main
 ### 1. Workflow Harian
 
 **Dengan GUI:**
+
 ```bash
 cd AI-Commit
 python ai_commit_gui.py
@@ -802,6 +876,7 @@ python ai_commit_gui.py
 ```
 
 **Dengan CLI:**
+
 ```bash
 # Morning routine - cek semua project
 cd AI-Commit
@@ -813,6 +888,7 @@ python ai_commit.py
 **GUI:** Buka app → Pilih repo → Select files → Generate → Commit
 
 **CLI:**
+
 ```bash
 cd AI-Commit
 python ai_commit.py --dir ../Folder1 --all -m "hotfix: critical bug"
@@ -821,6 +897,7 @@ python ai_commit.py --dir ../Folder1 --all -m "hotfix: critical bug"
 ### 3. Desktop Shortcut untuk GUI (Windows)
 
 Buat file `AI-Commit.bat`:
+
 ```batch
 @echo off
 cd C:\path\to\AI-Commit
@@ -832,6 +909,7 @@ Klik kanan → Send to → Desktop (create shortcut)
 ### 4. Desktop Shortcut untuk GUI (Linux/Mac)
 
 Buat file `ai-commit.sh`:
+
 ```bash
 #!/bin/bash
 cd ~/workspace/AI-Commit
@@ -882,6 +960,7 @@ alias aicommit-gpt='cd ~/workspace/AI-Commit && python ai_commit.py --provider c
 ```
 
 Lalu gunakan:
+
 ```bash
 # Dari mana saja
 aicommit
@@ -902,6 +981,7 @@ python ai_commit.py
 ```
 
 Jalankan:
+
 ```bash
 cd AI-Commit
 chmod +x check_all.sh
@@ -915,6 +995,7 @@ chmod +x check_all.sh
 **Scenario:** Anda maintain 5 project berbeda dalam satu workspace
 
 **Solution:**
+
 ```
 workspace/
 ├── project-frontend/
@@ -937,6 +1018,7 @@ python ai_commit.py
 **Scenario:** Review dan commit changes dari team
 
 **Solution:**
+
 ```bash
 # Cek semua project
 cd AI-Commit
@@ -952,6 +1034,7 @@ python ai_commit.py
 **Scenario:** Manage multiple client projects
 
 **Solution:**
+
 ```
 workspace/
 ├── client-a-project/
@@ -974,6 +1057,7 @@ python ai_commit.py --dir ../client-b-project
 **Scenario:** Automated commits dalam CI/CD pipeline
 
 **Solution:**
+
 ```yaml
 # .gitlab-ci.yml or .github/workflows/auto-commit.yml
 script:
@@ -983,7 +1067,7 @@ script:
 
 ## 🤝 Contributing
 
-Kontribusi selalu welcome! 
+Kontribusi selalu welcome!
 
 ### Cara Berkontribusi:
 
@@ -1007,7 +1091,7 @@ Kontribusi selalu welcome!
 - [x] CLI Version
 - [x] GUI Version with Tkinter
 - [ ] PyQt5/PyQt6 version untuk advanced GUI
-- [ ] Dark mode theme untuk GUI
+- [x] Dark mode theme untuk GUI
 - [ ] System tray integration
 - [ ] Drag & drop file support di GUI
 - [ ] Git graph visualization
@@ -1037,19 +1121,23 @@ Kontribusi selalu welcome!
 ## 📞 Support & Contact
 
 ### Menemukan Bug?
+
 - 🐛 Buat issue di repository dengan label `bug`
 - Sertakan error message dan langkah reproduksi
 
 ### Punya Saran?
+
 - 💡 Buat issue dengan label `enhancement`
 - Jelaskan use case dan expected behavior
 
 ### Butuh Bantuan?
+
 - 📖 Baca FAQ dan Troubleshooting di atas
 - 💬 Buat issue dengan label `question`
 - 📧 Email: dev@ryucode.com
 
 ### Follow Updates
+
 - ⭐ Star repository untuk updates
 - 👀 Watch untuk notifications
 - 🔔 Follow untuk new releases
@@ -1069,6 +1157,7 @@ Kontribusi selalu welcome!
 ### GUI Version
 
 **Main Window:**
+
 - Clean and modern interface
 - Auto-scan on startup
 - Visual file selection
@@ -1076,6 +1165,7 @@ Kontribusi selalu welcome!
 - AI-powered commit messages
 
 **Key Features Visible:**
+
 - 🔴 Red indicator for repos with changes
 - ⚪ White indicator for clean repos
 - 🆕 New file icon
@@ -1085,6 +1175,7 @@ Kontribusi selalu welcome!
 ### CLI Version
 
 **Terminal Output:**
+
 - Color-coded indicators
 - Interactive prompts
 - Progress feedback
@@ -1103,6 +1194,7 @@ Kontribusi selalu welcome!
 ## 🌟 Show Your Support
 
 Jika tool ini membantu Anda:
+
 - ⭐ Star the repository
 - 🐛 Report bugs
 - 💡 Suggest features
