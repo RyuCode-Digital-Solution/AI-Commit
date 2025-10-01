@@ -69,6 +69,9 @@ workspace/
 ### Install Dependencies
 
 ```bash
+# Clone repository
+git clone https://github.com/RyuCode-Digital-Solution/AI-Commit
+
 # Enter AI-Commit folder
 cd AI-Commit
 
