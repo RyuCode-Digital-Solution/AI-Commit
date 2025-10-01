@@ -194,7 +194,7 @@ GUI supports **light and dark themes** for your eye comfort:
 ---
 
 ## 🖥️ CLI Version
-![CLI Version](https://github.com/user-attachments/assets/60e0027d-c407-465d-90e8-8e130d2241ea)
+![CLI Version](https://github.com/user-attachments/assets/804fe01e-1a86-450a-8731-64797c3929db)
 
 ### Quick Start
 
