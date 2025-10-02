@@ -103,7 +103,7 @@ GUI mendukung **light dan dark theme** untuk kenyamanan mata Anda:
 
 ### Windows
 
-- Unduh [AI-Commit.exe](https://github.com/RyuCode-Digital-Solution/AI-Commit/blob/v1/dist/AI-Commit.exe) - Versi 1 (1.0.0) stabil.
+- Unduh [AI-Commit.exe](https://github.com/RyuCode-Digital-Solution/AI-Commit/raw/refs/heads/main/dist/AI-Commit.exe) - Versi 1 (1.0.0) stabil.
 
 ---
 

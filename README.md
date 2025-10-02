@@ -103,7 +103,7 @@ The GUI supports **light and dark themes** for better eye comfort:
 
 ### Windows
 
-- Download [AI-Commit.exe](https://github.com/RyuCode-Digital-Solution/AI-Commit/blob/v1/dist/AI-Commit.exe) – Stable version 1 (1.0.0)
+- Download [AI-Commit.exe](https://github.com/RyuCode-Digital-Solution/AI-Commit/raw/refs/heads/main/dist/AI-Commit.exe) – Stable version 1 (1.0.0)
 
 ---
 
