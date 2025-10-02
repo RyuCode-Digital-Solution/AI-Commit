@@ -9,7 +9,7 @@
 
 AI Commit adalah utilitas Python yang memanfaatkan kekuatan AI (Gemini & ChatGPT) untuk menganalisis perubahan kode Anda dan menghasilkan commit message yang mengikuti standar conventional commits secara otomatis.
 
-![GUI Version](https://github.com/user-attachments/assets/2387bd34-3e15-4ce8-9c93-2ea69e3281b7)
+![Demo](https://github.com/user-attachments/assets/48a59cd7-e394-4b28-b708-4b84ede4d795)
 
 ---
 
