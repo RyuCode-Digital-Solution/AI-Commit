@@ -1,0 +1,12 @@
+{
+  "gemini_api_key": "",
+  "openai_api_key": "",
+  "gemini_model": "gemini-2.5-flash",
+  "openai_model": "gpt-4o-mini",
+  "github_username": "",
+  "github_token": "",
+  "parent_folder": "/path/to/your/home",
+  "recent_repos": [],
+  "auto_push": true,
+  "dark_mode": false
+}
