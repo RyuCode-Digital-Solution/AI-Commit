@@ -2,7 +2,7 @@ import os
 import subprocess
 import threading
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional, List, Tuple, Dict
 import tkinter as tk
 from tkinter import ttk, scrolledtext, messagebox
 
@@ -18,8 +18,8 @@ try:
 except ImportError:
     OPENAI_AVAILABLE = False
 
-GEMINI_MODEL = "gemini-2.5-flash"
-OPENAI_MODEL = "gpt-4o-mini"
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
 class AICommitGUI:
     def __init__(self, root):
@@ -38,6 +38,7 @@ class AICommitGUI:
         self.repos = []
         self.current_repo_path = None
         self.raw_git_status = []  # Store raw git status data
+        self._is_generating = False  # Flag to prevent multiple generations
         
         # Color schemes
         self.light_theme = {
@@ -137,7 +138,7 @@ class AICommitGUI:
         ttk.Checkbutton(settings_frame, text="Auto Push to Origin", variable=self.auto_push).grid(row=0, column=2, padx=20, sticky=tk.E)
         
         # Repository Selection Frame
-        repo_frame = ttk.LabelFrame(main_frame, text="📁 Select Repository", padding="10")
+        repo_frame = ttk.LabelFrame(main_frame, text="📂 Select Repository", padding="10")
         repo_frame.grid(row=2, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=5)
         repo_frame.columnconfigure(1, weight=1)
         
@@ -153,7 +154,7 @@ class AICommitGUI:
         files_frame = ttk.LabelFrame(main_frame, text="📝 Changed Files", padding="10")
         files_frame.grid(row=3, column=0, columnspan=3, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
         
-        # File buttons - PINDAH KE ATAS
+        # File buttons - MOVED TO TOP
         file_buttons = ttk.Frame(files_frame)
         file_buttons.pack(fill=tk.X, pady=(0, 5))
         ttk.Button(file_buttons, text="✅ Select All", command=self.select_all_files, width=15).pack(side=tk.LEFT, padx=2)
@@ -317,7 +318,7 @@ class AICommitGUI:
         self.status_label.config(text=message)
         self.root.update_idletasks()
     
-    def run_git_command(self, command: list, cwd: Optional[str] = None) -> tuple[bool, str]:
+    def run_git_command(self, command: List[str], cwd: Optional[str] = None) -> Tuple[bool, str]:
         """Execute git command"""
         try:
             result = subprocess.run(
@@ -325,11 +326,16 @@ class AICommitGUI:
                 capture_output=True,
                 text=True,
                 check=True,
-                cwd=cwd
+                cwd=cwd,
+                timeout=30
             )
             return True, result.stdout
+        except subprocess.TimeoutExpired:
+            return False, "Command timed out after 30 seconds"
         except subprocess.CalledProcessError as e:
             return False, e.stderr
+        except FileNotFoundError:
+            return False, "Git command not found. Is Git installed?"
     
     def is_git_repo(self, path: str) -> bool:
         """Check if path is a git repository"""
@@ -421,16 +427,23 @@ class AICommitGUI:
             self.raw_git_status = []
             return
         
-        # Store raw git status for accurate file operations
-        self.raw_git_status = []
+        # Build temp list first to avoid race conditions
+        temp_status = []
         
         for line in output.strip().split('\n'):
-            if line and len(line) > 3:
+            if line and len(line) >= 3:
                 status = line[:2]
-                filename = line[3:].strip()  # Get clean filename
+                filename = line[3:].strip()
+                
+                # Normalize path separators
+                filename = filename.replace('\\', '/')
+                
+                # Handle renamed files: "R  old.txt -> new.txt"
+                if 'R' in status and '->' in filename:
+                    filename = filename.split('->')[-1].strip()
                 
                 # Store raw data
-                self.raw_git_status.append({
+                temp_status.append({
                     'status': status,
                     'filename': filename
                 })
@@ -452,11 +465,10 @@ class AICommitGUI:
                 display_text = f"{icon} {filename}"
                 self.files_listbox.insert(tk.END, display_text)
         
-        self.log(f"📝 Found {len(self.raw_git_status)} changed files")
+        # Atomic assignment to avoid race conditions
+        self.raw_git_status = temp_status
         
-        # Debug log - show what we stored
-        for idx, item in enumerate(self.raw_git_status):
-            self.log(f"  [{idx}] status='{item['status']}' file='{item['filename']}'", "info")
+        self.log(f"📝 Found {len(self.raw_git_status)} changed files")
     
     def select_all_files(self):
         """Select all files in listbox"""
@@ -467,6 +479,41 @@ class AICommitGUI:
         """Clear file selection"""
         self.files_listbox.selection_clear(0, tk.END)
         self.log("❌ Cleared file selection")
+
+    def find_exact_file(self, filename: str) -> Optional[str]:
+        """Find exact file match in git status - case sensitive"""
+        repo_path = Path(self.current_repo_path)
+        
+        # Normalize path separator
+        filename = filename.replace('\\', '/')
+        
+        # Direct path check first
+        if (repo_path / filename).exists():
+            return filename
+        
+        # For files in folders, search recursively
+        if '/' in filename:
+            parts = filename.split('/')
+            target_filename = parts[-1]
+            folder_path = '/'.join(parts[:-1]) if len(parts) > 1 else ''
+            
+            # Search in the specified folder
+            search_dir = repo_path / folder_path if folder_path else repo_path
+            
+            if search_dir.exists() and search_dir.is_dir():
+                # Look for exact filename match (case sensitive)
+                for item in search_dir.iterdir():
+                    if item.is_file() and item.name == target_filename:
+                        # Return relative path from repo root
+                        relative_path = item.relative_to(repo_path)
+                        return str(relative_path).replace('\\', '/')
+        else:
+            # File in root, search root directory only
+            for item in repo_path.iterdir():
+                if item.is_file() and item.name == filename:
+                    return filename
+        
+        return None
     
     def add_selected_files(self):
         """Add selected files to git"""
@@ -480,7 +527,7 @@ class AICommitGUI:
             return
         
         # Check if raw_git_status is available
-        if not hasattr(self, 'raw_git_status') or not self.raw_git_status:
+        if not self.raw_git_status:
             self.log("⚠️ No cached file data, refreshing...", "error")
             self.load_changed_files()
             messagebox.showwarning("Please Try Again", "File list refreshed. Please select files and try again.")
@@ -498,24 +545,17 @@ class AICommitGUI:
                 status_code = file_info['status']
                 filename = file_info['filename']
                 
-                self.log(f"📋 Index {i}: status='{status_code}' file='{filename}'")
-                
                 # Handle different file statuses
                 if 'D' in status_code:
                     deleted_files.append(filename)
                 else:
                     files_to_add.append(filename)
-            else:
-                self.log(f"⚠️ Index {i} out of range (max: {len(self.raw_git_status)-1})", "error")
         
         success_count = 0
         error_messages = []
         
         # Handle deleted files
         for filename in deleted_files:
-            # Check if file exists in filesystem
-            file_path = Path(self.current_repo_path) / filename
-            
             success_rm, output_rm = self.run_git_command(
                 ["git", "rm", filename],
                 cwd=self.current_repo_path
@@ -524,58 +564,30 @@ class AICommitGUI:
                 success_count += 1
                 self.log(f"🗑️ Staged deletion: {filename}", "success")
             else:
-                error_messages.append(f"rm {filename}: {output_rm}")
+                error_messages.append(f"Failed to remove {filename}")
                 self.log(f"❌ Failed rm: {filename}", "error")
         
-        # Handle other files (add one by one)
+        # Handle other files
         for filename in files_to_add:
-            # Check if file exists
-            file_path = Path(self.current_repo_path) / filename
+            # Try to find exact file match
+            actual_file = self.find_exact_file(filename)
             
-            if not file_path.exists():
-                # Try to find similar file
-                parent_dir = file_path.parent
-                file_stem = file_path.stem
-                file_ext = file_path.suffix
+            if actual_file:
+                success_add, output_add = self.run_git_command(
+                    ["git", "add", "--", actual_file],
+                    cwd=self.current_repo_path
+                )
                 
-                self.log(f"⚠️ File not found: {filename}", "error")
-                self.log(f"  Looking for similar files in {parent_dir}...")
-                
-                # Search for similar files
-                if parent_dir.exists():
-                    similar_files = []
-                    for f in parent_dir.iterdir():
-                        if f.is_file():
-                            # Check if name is similar
-                            if file_stem.lower() in f.stem.lower() or f.stem.lower() in file_stem.lower():
-                                if f.suffix == file_ext:
-                                    similar_files.append(f.name)
-                    
-                    if similar_files:
-                        self.log(f"  Found similar: {', '.join(similar_files)}")
-                        # Use the first match
-                        actual_filename = str(parent_dir / similar_files[0])
-                        if parent_dir != Path(self.current_repo_path):
-                            actual_filename = str(Path(parent_dir.name) / similar_files[0])
-                        else:
-                            actual_filename = similar_files[0]
-                        
-                        self.log(f"  Using: {actual_filename}")
-                        filename = actual_filename
-                    else:
-                        error_messages.append(f"File not found: {filename}")
-                        continue
-            
-            success_add, output_add = self.run_git_command(
-                ["git", "add", "--", filename],
-                cwd=self.current_repo_path
-            )
-            if success_add:
-                success_count += 1
-                self.log(f"✅ Staged: {filename}", "success")
+                if success_add:
+                    success_count += 1
+                    self.log(f"✅ Staged: {actual_file}", "success")
+                else:
+                    error_messages.append(f"Failed to add {actual_file}")
+                    self.log(f"❌ Failed to add: {actual_file}\n{output_add}", "error")
             else:
-                error_messages.append(f"add {filename}: {output_add}")
-                self.log(f"❌ Failed add: {filename}", "error")
+                # File not found, log detailed error
+                self.log(f"❌ File not found: {filename}", "error")
+                error_messages.append(f"File not found: {filename}")
         
         # Show results
         if success_count > 0:
@@ -587,7 +599,10 @@ class AICommitGUI:
                     f"Staged {success_count} file(s), but {len(error_messages)} failed.\nCheck Activity Log for details.")
         else:
             self.log("❌ No files were staged", "error")
-            messagebox.showerror("Error", "Failed to stage files. Check Activity Log for details.")
+            if error_messages:
+                messagebox.showerror("Error", f"Failed to stage files:\n" + "\n".join(error_messages[:3]))
+            else:
+                messagebox.showerror("Error", "Failed to stage files. Check Activity Log for details.")
         
         self.set_status("Ready")
         
@@ -596,6 +611,10 @@ class AICommitGUI:
     
     def auto_add_and_generate(self):
         """Auto add selected files (or all) then generate commit message"""
+        if self._is_generating:
+            self.log("⚠️ Already generating, please wait...", "error")
+            return
+        
         if not self.current_repo_path:
             messagebox.showwarning("No Repository", "Please select a repository first!")
             return
@@ -613,24 +632,19 @@ class AICommitGUI:
             self.select_all_files()
             selected_indices = self.files_listbox.curselection()
         
-        # Get fresh git status
-        success, output = self.run_git_command(
-            ["git", "status", "--porcelain"],
-            cwd=self.current_repo_path
-        )
-        
-        if not success:
-            messagebox.showerror("Error", "Failed to get git status")
+        # Use raw_git_status for file operations
+        if not self.raw_git_status:
+            self.log("⚠️ No file data available", "error")
             return
         
-        lines = output.strip().split('\n')
         files_to_add = []
         deleted_files = []
         
         for i in selected_indices:
-            if i < len(lines) and lines[i]:
-                status_code = lines[i][:2]
-                filename = lines[i][3:].strip()
+            if i < len(self.raw_git_status):
+                file_info = self.raw_git_status[i]
+                status_code = file_info['status']
+                filename = file_info['filename']
                 
                 if 'D' in status_code:
                     deleted_files.append(filename)
@@ -648,12 +662,14 @@ class AICommitGUI:
         
         # Handle other files
         for filename in files_to_add:
-            success_add, _ = self.run_git_command(
-                ["git", "add", "--", filename],
-                cwd=self.current_repo_path
-            )
-            if success_add:
-                self.log(f"✅ Staged: {filename}")
+            actual_file = self.find_exact_file(filename)
+            if actual_file:
+                success_add, _ = self.run_git_command(
+                    ["git", "add", "--", actual_file],
+                    cwd=self.current_repo_path
+                )
+                if success_add:
+                    self.log(f"✅ Staged: {actual_file}")
         
         total_staged = len(files_to_add) + len(deleted_files)
         if total_staged > 0:
@@ -666,6 +682,9 @@ class AICommitGUI:
     
     def generate_commit_message(self):
         """Generate commit message using AI"""
+        if self._is_generating:
+            return
+        
         if not self.current_repo_path:
             messagebox.showwarning("No Repository", "Please select a repository first!")
             return
@@ -684,6 +703,8 @@ class AICommitGUI:
         self.set_status(f"Generating message with {provider}...")
         self.log(f"🤖 Generating commit message with {provider}...")
         
+        self._is_generating = True
+        
         # Run in thread to avoid blocking UI
         thread = threading.Thread(target=self._generate_message_thread, args=(diff, provider))
         thread.daemon = True
@@ -692,6 +713,9 @@ class AICommitGUI:
     def _generate_message_thread(self, diff: str, provider: str):
         """Generate message in separate thread"""
         try:
+            # Truncate diff to avoid token limits
+            diff_truncated = diff[:3000] if len(diff) > 3000 else diff
+            
             if provider == "gemini":
                 if not GEMINI_AVAILABLE:
                     raise ImportError("google-generativeai not installed")
@@ -706,7 +730,7 @@ class AICommitGUI:
 
 Git diff:
 ```
-{diff[:3000]}
+{diff_truncated}
 ```
 
 Format: <type>(<scope>): <subject>
@@ -729,10 +753,11 @@ Use English, be concise. Return only the commit message."""
                     model=OPENAI_MODEL,
                     messages=[
                         {"role": "system", "content": "You generate git commit messages."},
-                        {"role": "user", "content": f"Generate commit message for:\n{diff[:3000]}"}
+                        {"role": "user", "content": f"Generate commit message for:\n{diff_truncated}"}
                     ],
                     temperature=0.7,
-                    max_tokens=200
+                    max_tokens=200,
+                    timeout=30
                 )
                 message = response.choices[0].message.content.strip()
             
@@ -741,18 +766,24 @@ Use English, be concise. Return only the commit message."""
             
         except Exception as e:
             self.root.after(0, self._show_error, str(e))
+        finally:
+            # Always reset the flag
+            self.root.after(0, lambda: setattr(self, '_is_generating', False))
+            self.root.after(0, lambda: self.set_status("Ready"))
     
     def _update_message(self, message: str):
         """Update commit message (called from main thread)"""
         self.message_text.delete(1.0, tk.END)
         self.message_text.insert(1.0, message)
         self.log("✅ Commit message generated successfully", "success")
+        self._is_generating = False
         self.set_status("Ready")
     
     def _show_error(self, error: str):
         """Show error message (called from main thread)"""
         self.log(f"❌ Error: {error}", "error")
         messagebox.showerror("Error", f"Failed to generate message:\n{error}")
+        self._is_generating = False
         self.set_status("Ready")
     
     def clear_message(self):
@@ -779,8 +810,18 @@ Use English, be concise. Return only the commit message."""
             messagebox.showwarning("No Message", "Please enter or generate a commit message!")
             return
         
+        # Validate message length (Git recommends 50 chars for subject)
+        first_line = message.split('\n')[0]
+        if len(first_line) > 72:
+            response = messagebox.askyesno(
+                "Long Subject Line",
+                f"The commit message subject is {len(first_line)} characters (recommended: 50-72).\n\nContinue anyway?"
+            )
+            if not response:
+                return
+        
         self.set_status("Committing...")
-        self.log(f"📝 Committing with message: {message[:50]}...")
+        self.log(f"📝 Committing with message: {first_line[:50]}...")
         
         # Commit
         success, output = self.run_git_command(
@@ -829,6 +870,8 @@ Use English, be concise. Return only the commit message."""
             messagebox.showinfo("Success", "Commit completed successfully!")
         
         self.set_status("Ready")
+        # Clear message after successful commit
+        self.clear_message()
         # Refresh file list
         self.load_changed_files()
 

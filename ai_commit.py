@@ -2,7 +2,7 @@ import os
 import subprocess
 import sys
 import platform
-from typing import Optional, List
+from typing import Optional, List, Tuple
 from pathlib import Path
 
 try:
@@ -17,8 +17,8 @@ try:
 except ImportError:
     OPENAI_AVAILABLE = False
 
-GEMINI_MODEL = "gemini-2.5-flash"
-OPENAI_MODEL = "gpt-4o-mini"
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
 def clear_terminal():
     """Clear terminal screen for all OS and terminals"""
@@ -37,7 +37,7 @@ class AICommit:
         Initialize AI Commit
         
         Args:
-            ai_provider: "Gemini" or "ChatGPT"
+            ai_provider: "gemini" or "chatgpt"
         """
         self.ai_provider = ai_provider.lower()
         
@@ -46,7 +46,11 @@ class AICommit:
                 raise ImportError("Install google-generativeai: pip install google-generativeai")
             self.api_key = os.getenv("GEMINI_API_KEY")
             if not self.api_key:
-                raise ValueError("Set GEMINI_API_KEY environment variable")
+                raise ValueError(
+                    "GEMINI_API_KEY not found. Set it with:\n"
+                    "  export GEMINI_API_KEY='your-key'  # Linux/Mac\n"
+                    "  set GEMINI_API_KEY=your-key       # Windows"
+                )
             genai.configure(api_key=self.api_key)
             self.model = genai.GenerativeModel(GEMINI_MODEL)
             
@@ -55,12 +59,16 @@ class AICommit:
                 raise ImportError("Install openai: pip install openai")
             self.api_key = os.getenv("OPENAI_API_KEY")
             if not self.api_key:
-                raise ValueError("Set OPENAI_API_KEY environment variable")
+                raise ValueError(
+                    "OPENAI_API_KEY not found. Set it with:\n"
+                    "  export OPENAI_API_KEY='your-key'  # Linux/Mac\n"
+                    "  set OPENAI_API_KEY=your-key       # Windows"
+                )
             self.client = OpenAI(api_key=self.api_key)
         else:
-            raise ValueError("AI providers must be ‘Gemini’ or 'ChatGPT'")
+            raise ValueError("AI providers must be 'gemini' or 'chatgpt'")
 
-    def run_git_command(self, command: list, cwd: Optional[str] = None) -> tuple[bool, str]:
+    def run_git_command(self, command: List[str], cwd: Optional[str] = None) -> Tuple[bool, str]:
         """Execute git command"""
         try:
             result = subprocess.run(
@@ -68,11 +76,16 @@ class AICommit:
                 capture_output=True,
                 text=True,
                 check=True,
-                cwd=cwd
+                cwd=cwd,
+                timeout=30  # Add timeout to prevent hanging
             )
             return True, result.stdout
+        except subprocess.TimeoutExpired:
+            return False, "Command timed out after 30 seconds"
         except subprocess.CalledProcessError as e:
             return False, e.stderr
+        except FileNotFoundError:
+            return False, "Git command not found. Is Git installed?"
 
     def is_git_repo(self, path: str) -> bool:
         """Check if path is a git repository"""
@@ -89,7 +102,7 @@ class AICommit:
             return True
         return False
 
-    def find_git_repos(self, base_path: str = ".") -> List[tuple[str, str, bool]]:
+    def find_git_repos(self, base_path: str = ".") -> List[Tuple[str, str, bool]]:
         """
         Find all git repositories in parent directory
         Returns: List of (name, path, has_changes)
@@ -146,7 +159,7 @@ class AICommit:
             return None
         
         # Show all repositories with change indicators
-        print("\n📁 Git repositories found:")
+        print("\n📂 Git repositories found:")
         
         repos_with_changes = []
         repos_without_changes = []
@@ -174,7 +187,7 @@ class AICommit:
         # Manual selection
         while True:
             try:
-                choice = input("\n❓ Select repository (number): ")
+                choice = input("\n▶ Select repository (number): ")
                 idx = int(choice) - 1
                 if 0 <= idx < len(repos):
                     selected = repos[idx]
@@ -187,7 +200,7 @@ class AICommit:
                 print("\n❌ Cancelled")
                 return None
 
-    def get_changed_files(self, repo_path: str) -> Optional[List[str]]:
+    def get_changed_files(self, repo_path: str) -> Optional[List[Tuple[str, str]]]:
         """Get list of changed files"""
         success, output = self.run_git_command(
             ["git", "status", "--porcelain"],
@@ -199,11 +212,14 @@ class AICommit:
         
         files = []
         for line in output.strip().split('\n'):
-            if line:
+            if line and len(line) >= 3:  # Ensure minimum length
                 # Parse git status output
                 status = line[:2]
                 filename = line[3:]
                 if status.strip():  # Has changes
+                    # Handle renamed files: "R  old.txt -> new.txt"
+                    if 'R' in status and '->' in filename:
+                        filename = filename.split('->')[-1].strip()
                     files.append((status, filename))
         
         return files
@@ -225,7 +241,7 @@ class AICommit:
             print("\n➕ Adding all files...")
             success, output = self.run_git_command(["git", "add", "."], cwd=repo_path)
         else:
-            response = input("\n❓ Add all files? (y/n/select): ").lower()
+            response = input("\n▶ Add all files? (y/n/select): ").lower()
             
             if response == 'y':
                 success, output = self.run_git_command(["git", "add", "."], cwd=repo_path)
@@ -240,8 +256,11 @@ class AICommit:
                         print("❌ No valid files")
                         return False
                     
+                    # Normalize paths for cross-platform compatibility
+                    normalized_files = [f.replace('\\', '/') for f in selected_files]
+                    
                     success, output = self.run_git_command(
-                        ["git", "add"] + selected_files,
+                        ["git", "add", "--"] + normalized_files,
                         cwd=repo_path
                     )
                 except (ValueError, IndexError):
@@ -278,11 +297,14 @@ class AICommit:
 
     def generate_commit_message(self, diff: str) -> Optional[str]:
         """Generate commit message using AI"""
+        # Truncate diff to avoid token limits
+        diff_truncated = diff[:3000] if len(diff) > 3000 else diff
+        
         prompt = f"""Generate a clear commit message following conventional commits format.
 
 Git diff:
 ```
-{diff[:3000]}
+{diff_truncated}
 ```
 
 Format: <type>(<scope>): <subject>
@@ -293,7 +315,7 @@ Use English, be concise. Return only the commit message."""
         try:
             if self.ai_provider == "gemini":
                 response = self.model.generate_content(prompt)
-                return response.text.strip()
+                message = response.text.strip()
             else:  # chatgpt
                 response = self.client.chat.completions.create(
                     model=OPENAI_MODEL,
@@ -302,9 +324,17 @@ Use English, be concise. Return only the commit message."""
                         {"role": "user", "content": prompt}
                     ],
                     temperature=0.7,
-                    max_tokens=200
+                    max_tokens=200,
+                    timeout=30  # Add timeout
                 )
-                return response.choices[0].message.content.strip()
+                message = response.choices[0].message.content.strip()
+            
+            # Validate message length (Git recommends 50 chars for subject)
+            if len(message.split('\n')[0]) > 72:
+                print("⚠️  Warning: Commit message subject is longer than 72 characters")
+            
+            return message
+            
         except Exception as e:
             print(f"❌ Error generating commit message: {e}")
             return None
@@ -388,7 +418,7 @@ Use English, be concise. Return only the commit message."""
             print(f"\n💡 AI suggests commit message:")
             print(f"   {commit_message}")
             
-            response = input("\n❓ Use this message? (y/n/edit): ").lower()
+            response = input("\n▶ Use this message? (y/n/edit): ").lower()
             
             if response == 'n':
                 print("❌ Cancelled.")
