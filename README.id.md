@@ -3,13 +3,14 @@
 [![Language](https://img.shields.io/badge/Language-English-blue)](README.md)
 [![Bahasa](https://img.shields.io/badge/Bahasa-Indonesia-red)](README.id.md)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.8+-yellow.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.9+-yellow.svg)](https://www.python.org/)
 
 > Alat commit otomatis berbasis AI yang menghasilkan commit message berkualitas dan mendukung multi-project workspace
 
 AI Commit adalah utilitas Python yang memanfaatkan kekuatan AI (Gemini & ChatGPT) untuk menganalisis perubahan kode Anda dan menghasilkan commit message yang mengikuti standar conventional commits secara otomatis.
 
 **Tersedia dalam 2 versi:**
+
 - 🖥️ **CLI Version** - Command line interface untuk terminal lovers
 - 🎨 **GUI Version** - Graphical interface dengan Tkinter (tanpa dependency tambahan!)
 
@@ -51,6 +52,7 @@ workspace/
 ```
 
 **Cara Kerja:**
+
 - Tool dijalankan dari dalam folder `AI-Commit`
 - Otomatis scan **parent directory** untuk menemukan semua git repositories (Folder1, Folder2, Folder3)
 - Deteksi folder mana yang punya perubahan (ditandai dengan 🔴)
@@ -62,7 +64,7 @@ workspace/
 
 ### Prerequisites
 
-- Python 3.8 atau lebih baru
+- Python 3.9 atau lebih baru
 - Git terinstall
 - API Key dari Gemini atau OpenAI
 
@@ -84,12 +86,14 @@ pip install -r requirements.txt
 ### 1. Dapatkan API Key
 
 #### Gemini API Key (Gratis - Recommended)
+
 1. Kunjungi [Google AI Studio](https://makersuite.google.com/app/apikey)
 2. Login dengan akun Google
 3. Klik "Create API Key"
 4. Copy API key yang dihasilkan
 
 #### OpenAI API Key (Berbayar)
+
 1. Kunjungi [OpenAI Platform](https://platform.openai.com/api-keys)
 2. Login atau buat akun
 3. Klik "Create new secret key"
@@ -100,12 +104,14 @@ pip install -r requirements.txt
 #### Linux/Mac
 
 **Temporary (untuk session saat ini):**
+
 ```bash
 export GEMINI_API_KEY="your-gemini-api-key-here"
 export OPENAI_API_KEY="your-openai-api-key-here"
 ```
 
 **Permanent (tambahkan ke ~/.bashrc atau ~/.zshrc):**
+
 ```bash
 echo 'export GEMINI_API_KEY="your-gemini-api-key-here"' >> ~/.bashrc
 echo 'export OPENAI_API_KEY="your-openai-api-key-here"' >> ~/.bashrc
@@ -115,18 +121,21 @@ source ~/.bashrc
 #### Windows
 
 **Command Prompt (Temporary):**
+
 ```cmd
 set GEMINI_API_KEY=your-gemini-api-key-here
 set OPENAI_API_KEY=your-openai-api-key-here
 ```
 
 **PowerShell (Temporary):**
+
 ```powershell
 $env:GEMINI_API_KEY="your-gemini-api-key-here"
 $env:OPENAI_API_KEY="your-openai-api-key-here"
 ```
 
 **Permanent (System Environment Variables):**
+
 1. Buka "System Properties" → "Environment Variables"
 2. Klik "New" di User Variables
 3. Variable name: `GEMINI_API_KEY`
@@ -136,6 +145,7 @@ $env:OPENAI_API_KEY="your-openai-api-key-here"
 ---
 
 ## 🎨 GUI Version (Recommended)
+
 ![GUI Version](https://github.com/user-attachments/assets/2387bd34-3e15-4ce8-9c93-2ea69e3281b7)
 
 ### Fitur
@@ -177,10 +187,12 @@ python ai_commit_gui.py
 GUI mendukung **light dan dark theme** untuk kenyamanan mata Anda:
 
 **Cara Mengaktifkan:**
+
 - Cek/Uncek checkbox **"🌙 Dark Mode"** di pojok kanan atas
 - Theme akan langsung berubah untuk semua komponen
 
 **Dark Theme:**
+
 - Background gelap (#1e1e1e) yang nyaman untuk mata
 - Text terang (#ffffff) untuk kontras optimal
 - Frame abu-abu (#2d2d2d) untuk pemisahan yang jelas
@@ -188,6 +200,7 @@ GUI mendukung **light dan dark theme** untuk kenyamanan mata Anda:
 - Cocok untuk bekerja malam hari atau ruangan gelap
 
 **Light Theme:**
+
 - Background terang (#f0f0f0) untuk ruangan terang
 - Text hitam (#000000) untuk ketajaman maksimal
 - Frame putih (#ffffff) untuk tampilan bersih
@@ -197,6 +210,7 @@ GUI mendukung **light dan dark theme** untuk kenyamanan mata Anda:
 ---
 
 ## 🖥️ CLI Version
+
 ![CLI Version](https://github.com/user-attachments/assets/804fe01e-1a86-450a-8731-64797c3929db)
 
 ### Quick Start
@@ -217,14 +231,14 @@ python ai_commit.py
 
 ### Command Line Options
 
-| Option | Short | Deskripsi | Contoh |
-|--------|-------|-----------|--------|
-| `--provider` | - | Pilih AI provider (gemini/chatgpt) | `--provider chatgpt` |
-| `--dir` | `-d` | Spesifikasi direktori target | `--dir ../Folder1` |
-| `--all` | `-a` | Add semua file tanpa konfirmasi | `--all` |
-| `--message` | `-m` | Custom commit message (skip AI) | `-m "fix: bug"` |
-| `--no-push` | - | Commit tanpa push | `--no-push` |
-| `--help` | `-h` | Tampilkan help message | `--help` |
+| Option       | Short | Deskripsi                          | Contoh               |
+| ------------ | ----- | ---------------------------------- | -------------------- |
+| `--provider` | -     | Pilih AI provider (gemini/chatgpt) | `--provider chatgpt` |
+| `--dir`      | `-d`  | Spesifikasi direktori target       | `--dir ../Folder1`   |
+| `--all`      | `-a`  | Add semua file tanpa konfirmasi    | `--all`              |
+| `--message`  | `-m`  | Custom commit message (skip AI)    | `-m "fix: bug"`      |
+| `--no-push`  | -     | Commit tanpa push                  | `--no-push`          |
+| `--help`     | `-h`  | Tampilkan help message             | `--help`             |
 
 ### Contoh CLI
 
@@ -246,17 +260,18 @@ python ai_commit.py --dir ../Folder3 --all
 
 ## 🎯 Perbandingan GUI vs CLI
 
-| Fitur | GUI | CLI |
-|-------|-----|-----|
-| Kemudahan | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
-| Kecepatan | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Visual Feedback | ⭐⭐⭐⭐⭐ | ⭐⭐ |
-| Automation | ⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Remote Access | ❌ | ✅ |
-| Beginner Friendly | ✅ | ⚠️ |
-| Dark Mode | ✅ | ❌ |
+| Fitur             | GUI        | CLI        |
+| ----------------- | ---------- | ---------- |
+| Kemudahan         | ⭐⭐⭐⭐⭐ | ⭐⭐⭐     |
+| Kecepatan         | ⭐⭐⭐     | ⭐⭐⭐⭐⭐ |
+| Visual Feedback   | ⭐⭐⭐⭐⭐ | ⭐⭐       |
+| Automation        | ⭐⭐       | ⭐⭐⭐⭐⭐ |
+| Remote Access     | ❌         | ✅         |
+| Beginner Friendly | ✅         | ⚠️         |
+| Dark Mode         | ✅         | ❌         |
 
 **Rekomendasi:**
+
 - 🎨 **Gunakan GUI** jika: pemula, prefer visual, bekerja local
 - 🖥️ **Gunakan CLI** jika: power user, automation, remote work
 
@@ -267,6 +282,7 @@ python ai_commit.py --dir ../Folder3 --all
 ### Problem: "GEMINI_API_KEY not found"
 
 **Solusi:**
+
 ```bash
 # Cek apakah sudah di-set
 echo $GEMINI_API_KEY  # Linux/Mac
@@ -280,6 +296,7 @@ set GEMINI_API_KEY=your-api-key  # Windows
 ### Problem: "Tidak ada git repository ditemukan"
 
 **Solusi:**
+
 1. Pastikan Anda menjalankan tool dari **dalam folder AI-Commit**
 2. Pastikan folder sibling (Folder1, Folder2, dll) adalah git repositories
 3. Cek dengan:
@@ -300,6 +317,7 @@ set GEMINI_API_KEY=your-api-key  # Windows
 **Solusi:**
 
 **Linux:**
+
 ```bash
 # Install tkinter
 sudo apt-get install python3-tk  # Ubuntu/Debian
@@ -307,12 +325,14 @@ sudo yum install python3-tkinter  # CentOS/RHEL
 ```
 
 **macOS:**
+
 ```bash
 # Tkinter sudah included, tapi jika error:
 brew install python-tk
 ```
 
 **Windows:**
+
 - Tkinter sudah included dalam Python installer
 - Jika tidak ada, reinstall Python dan check "tcl/tk" option
 
@@ -322,13 +342,15 @@ brew install python-tk
 
 ### Q: Bagaimana cara mengaktifkan Dark Mode di GUI?
 
-**A:** 
+**A:**
+
 1. Buka aplikasi GUI (`python ai_commit_gui.py`)
 2. Lihat pojok kanan atas, ada checkbox "🌙 Dark Mode"
 3. Klik checkbox untuk toggle antara light dan dark theme
 4. Theme akan langsung berubah untuk semua komponen UI
 
 Dark Mode cocok untuk:
+
 - Bekerja malam hari
 - Mengurangi eye strain
 - Ruangan dengan pencahayaan rendah
@@ -349,12 +371,14 @@ self.dark_mode = tk.BooleanVar(value=True)  # Default Dark Mode
 ### Q: Apakah tool ini gratis?
 
 **A:** Tool-nya 100% gratis dan open source. Namun untuk AI:
+
 - **Gemini API**: Gratis dengan quota harian yang cukup (recommended)
 - **OpenAI API**: Berbayar, sekitar $0.002 per commit
 
 ### Q: Apakah data saya aman?
 
-**A:** 
+**A:**
+
 - ✅ Tool hanya mengirim **git diff** (perubahan code) ke AI
 - ✅ Tidak ada data yang disimpan di server
 - ✅ API key disimpan lokal di environment variable Anda
@@ -363,6 +387,7 @@ self.dark_mode = tk.BooleanVar(value=True)  # Default Dark Mode
 ### Q: GUI atau CLI, mana yang lebih baik?
 
 **A:** Tergantung kebutuhan:
+
 - **GUI**: Lebih mudah untuk pemula, visual feedback, cocok untuk daily use
 - **CLI**: Lebih cepat, bisa di-automate, cocok untuk power users dan remote work
 
@@ -423,14 +448,17 @@ Kontribusi selalu welcome!
 ## 📞 Support & Contact
 
 ### Menemukan Bug?
+
 - 🐛 Buat issue di repository dengan label `bug`
 - Sertakan error message dan langkah reproduksi
 
 ### Punya Saran?
+
 - 💡 Buat issue dengan label `enhancement`
 - Jelaskan use case dan expected behavior
 
 ### Butuh Bantuan?
+
 - 📖 Baca FAQ dan Troubleshooting di atas
 - 💬 Buat issue dengan label `question`
 - 📧 Email: dev@ryucode.com

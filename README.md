@@ -3,13 +3,14 @@
 [![Language](https://img.shields.io/badge/Language-English-blue)](README.md)
 [![Bahasa](https://img.shields.io/badge/Bahasa-Indonesia-red)](README.id.md)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.8+-yellow.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.9+-yellow.svg)](https://www.python.org/)
 
 > AI-powered automatic commit tool that generates quality commit messages and supports multi-project workspace
 
 AI Commit is a Python utility that leverages AI power (Gemini & ChatGPT) to analyze your code changes and automatically generate commit messages following conventional commits standards.
 
 **Available in 2 versions:**
+
 - 🖥️ **CLI Version** - Command line interface for terminal lovers
 - 🎨 **GUI Version** - Graphical interface with Tkinter (no additional dependencies!)
 
@@ -51,6 +52,7 @@ workspace/
 ```
 
 **How it works:**
+
 - Tool runs from inside `AI-Commit` folder
 - Automatically scans **parent directory** to find all git repositories (Folder1, Folder2, Folder3)
 - Detects which folders have changes (marked with 🔴)
@@ -62,7 +64,7 @@ workspace/
 
 ### Prerequisites
 
-- Python 3.8 or newer
+- Python 3.9 or newer
 - Git installed
 - API Key from Gemini or OpenAI
 
@@ -84,12 +86,14 @@ pip install -r requirements.txt
 ### 1. Get API Key
 
 #### Gemini API Key (Free - Recommended)
+
 1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
 2. Login with Google account
 3. Click "Create API Key"
 4. Copy the generated API key
 
 #### OpenAI API Key (Paid)
+
 1. Visit [OpenAI Platform](https://platform.openai.com/api-keys)
 2. Login or create account
 3. Click "Create new secret key"
@@ -100,12 +104,14 @@ pip install -r requirements.txt
 #### Linux/Mac
 
 **Temporary (current session only):**
+
 ```bash
 export GEMINI_API_KEY="your-gemini-api-key-here"
 export OPENAI_API_KEY="your-openai-api-key-here"
 ```
 
 **Permanent (add to ~/.bashrc or ~/.zshrc):**
+
 ```bash
 echo 'export GEMINI_API_KEY="your-gemini-api-key-here"' >> ~/.bashrc
 echo 'export OPENAI_API_KEY="your-openai-api-key-here"' >> ~/.bashrc
@@ -115,18 +121,21 @@ source ~/.bashrc
 #### Windows
 
 **Command Prompt (Temporary):**
+
 ```cmd
 set GEMINI_API_KEY=your-gemini-api-key-here
 set OPENAI_API_KEY=your-openai-api-key-here
 ```
 
 **PowerShell (Temporary):**
+
 ```powershell
 $env:GEMINI_API_KEY="your-gemini-api-key-here"
 $env:OPENAI_API_KEY="your-openai-api-key-here"
 ```
 
 **Permanent (System Environment Variables):**
+
 1. Open "System Properties" → "Environment Variables"
 2. Click "New" in User Variables
 3. Variable name: `GEMINI_API_KEY`
@@ -136,6 +145,7 @@ $env:OPENAI_API_KEY="your-openai-api-key-here"
 ---
 
 ## 🎨 GUI Version (Recommended)
+
 ![GUI Version](https://github.com/user-attachments/assets/2387bd34-3e15-4ce8-9c93-2ea69e3281b7)
 
 ### Features
@@ -177,10 +187,12 @@ python ai_commit_gui.py
 GUI supports **light and dark themes** for your eye comfort:
 
 **How to Activate:**
+
 - Check/Uncheck **"🌙 Dark Mode"** checkbox in top right corner
 - Theme instantly changes for all components
 
 **Dark Theme:**
+
 - Dark background (#1e1e1e) comfortable for eyes
 - Light text (#ffffff) for optimal contrast
 - Gray frames (#2d2d2d) for clear separation
@@ -188,6 +200,7 @@ GUI supports **light and dark themes** for your eye comfort:
 - Perfect for night work or dark rooms
 
 **Light Theme:**
+
 - Light background (#f0f0f0) for bright rooms
 - Black text (#000000) for maximum sharpness
 - White frames (#ffffff) for clean appearance
@@ -197,6 +210,7 @@ GUI supports **light and dark themes** for your eye comfort:
 ---
 
 ## 🖥️ CLI Version
+
 ![CLI Version](https://github.com/user-attachments/assets/804fe01e-1a86-450a-8731-64797c3929db)
 
 ### Quick Start
@@ -217,14 +231,14 @@ python ai_commit.py
 
 ### Command Line Options
 
-| Option | Short | Description | Example |
-|--------|-------|-------------|---------|
-| `--provider` | - | Choose AI provider (gemini/chatgpt) | `--provider chatgpt` |
-| `--dir` | `-d` | Specify target directory | `--dir ../Folder1` |
-| `--all` | `-a` | Add all files without confirmation | `--all` |
-| `--message` | `-m` | Custom commit message (skip AI) | `-m "fix: bug"` |
-| `--no-push` | - | Commit without push | `--no-push` |
-| `--help` | `-h` | Display help message | `--help` |
+| Option       | Short | Description                         | Example              |
+| ------------ | ----- | ----------------------------------- | -------------------- |
+| `--provider` | -     | Choose AI provider (gemini/chatgpt) | `--provider chatgpt` |
+| `--dir`      | `-d`  | Specify target directory            | `--dir ../Folder1`   |
+| `--all`      | `-a`  | Add all files without confirmation  | `--all`              |
+| `--message`  | `-m`  | Custom commit message (skip AI)     | `-m "fix: bug"`      |
+| `--no-push`  | -     | Commit without push                 | `--no-push`          |
+| `--help`     | `-h`  | Display help message                | `--help`             |
 
 ### CLI Examples
 
@@ -246,17 +260,18 @@ python ai_commit.py --dir ../Folder3 --all
 
 ## 🎯 GUI vs CLI Comparison
 
-| Feature | GUI | CLI |
-|---------|-----|-----|
-| Ease of Use | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
-| Speed | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Visual Feedback | ⭐⭐⭐⭐⭐ | ⭐⭐ |
-| Automation | ⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Remote Access | ❌ | ✅ |
-| Beginner Friendly | ✅ | ⚠️ |
-| Dark Mode | ✅ | ❌ |
+| Feature           | GUI        | CLI        |
+| ----------------- | ---------- | ---------- |
+| Ease of Use       | ⭐⭐⭐⭐⭐ | ⭐⭐⭐     |
+| Speed             | ⭐⭐⭐     | ⭐⭐⭐⭐⭐ |
+| Visual Feedback   | ⭐⭐⭐⭐⭐ | ⭐⭐       |
+| Automation        | ⭐⭐       | ⭐⭐⭐⭐⭐ |
+| Remote Access     | ❌         | ✅         |
+| Beginner Friendly | ✅         | ⚠️         |
+| Dark Mode         | ✅         | ❌         |
 
 **Recommendation:**
+
 - 🎨 **Use GUI** if: beginner, prefer visual, working locally
 - 🖥️ **Use CLI** if: power user, automation, remote work
 
@@ -267,6 +282,7 @@ python ai_commit.py --dir ../Folder3 --all
 ### Problem: "GEMINI_API_KEY not found"
 
 **Solution:**
+
 ```bash
 # Check if already set
 echo $GEMINI_API_KEY  # Linux/Mac
@@ -280,6 +296,7 @@ set GEMINI_API_KEY=your-api-key  # Windows
 ### Problem: "No git repositories found"
 
 **Solution:**
+
 1. Ensure you run tool from **inside AI-Commit folder**
 2. Ensure sibling folders (Folder1, Folder2, etc) are git repositories
 3. Check with:
@@ -300,6 +317,7 @@ set GEMINI_API_KEY=your-api-key  # Windows
 **Solution:**
 
 **Linux:**
+
 ```bash
 # Install tkinter
 sudo apt-get install python3-tk  # Ubuntu/Debian
@@ -307,12 +325,14 @@ sudo yum install python3-tkinter  # CentOS/RHEL
 ```
 
 **macOS:**
+
 ```bash
 # Tkinter already included, but if error:
 brew install python-tk
 ```
 
 **Windows:**
+
 - Tkinter already included in Python installer
 - If missing, reinstall Python and check "tcl/tk" option
 
@@ -322,13 +342,15 @@ brew install python-tk
 
 ### Q: How to activate Dark Mode in GUI?
 
-**A:** 
+**A:**
+
 1. Open GUI app (`python ai_commit_gui.py`)
 2. Look at top right corner, there's "🌙 Dark Mode" checkbox
 3. Click checkbox to toggle between light and dark theme
 4. Theme instantly changes for all UI components
 
 Dark Mode suitable for:
+
 - Night work
 - Reducing eye strain
 - Low-light rooms
@@ -349,12 +371,14 @@ self.dark_mode = tk.BooleanVar(value=True)  # Default Dark Mode
 ### Q: Is this tool free?
 
 **A:** Tool is 100% free and open source. However for AI:
+
 - **Gemini API**: Free with sufficient daily quota (recommended)
 - **OpenAI API**: Paid, around $0.002 per commit
 
 ### Q: Is my data safe?
 
-**A:** 
+**A:**
+
 - ✅ Tool only sends **git diff** (code changes) to AI
 - ✅ No data stored on server
 - ✅ API key stored locally in your environment variables
@@ -363,6 +387,7 @@ self.dark_mode = tk.BooleanVar(value=True)  # Default Dark Mode
 ### Q: GUI or CLI, which is better?
 
 **A:** Depends on your needs:
+
 - **GUI**: Easier for beginners, visual feedback, suitable for daily use
 - **CLI**: Faster, can be automated, suitable for power users and remote work
 
@@ -423,14 +448,17 @@ Contributions always welcome!
 ## 📞 Support & Contact
 
 ### Found a Bug?
+
 - 🐛 Create issue in repository with `bug` label
 - Include error message and reproduction steps
 
 ### Have a Suggestion?
+
 - 💡 Create issue with `enhancement` label
 - Explain use case and expected behavior
 
 ### Need Help?
+
 - 📖 Read FAQ and Troubleshooting above
 - 💬 Create issue with `question` label
 - 📧 Email: dev@ryucode.com
