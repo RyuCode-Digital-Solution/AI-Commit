@@ -33,7 +33,7 @@ jobs:
     #     pip install pytest
     #     pytest
 
-    - name: Build executable with PyInstaller
+    - name: Build with PyInstaller
       run: pyinstaller --name "AI-Commit" --windowed --onefile --icon="assets/icon.ico" main.py
 
     - name: Upload Artifact

@@ -1,12 +1,14 @@
 {
-    "gemini_api_key": "",
+    "gemini_api_key": "AIzaSyCszUa-HuMx_RQRUUR3jZ-lTu7XFhU0MpQ",
     "openai_api_key": "",
     "gemini_model": "gemini-2.5-flash",
     "openai_model": "gpt-4o-mini",
     "github_username": "",
     "github_token": "",
     "parent_folder": "/path/to/your/home",
-    "recent_repos": [],
+    "recent_repos": [
+        "/home/fiandev/projects/ryucode/AI-Commit"
+    ],
     "auto_push": true,
-    "dark_mode": true
+    "dark_mode": false
 }

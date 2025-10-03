@@ -2,8 +2,8 @@
 
 #define MyAppName "AI-Commit"
 #define MyAppVersion "1.0.0"
-#define MyAppPublisher "fiandev"
-#define MyAppURL "https://github.com/fiandev/AI-Commit"
+#define MyAppPublisher "Ryucode"
+#define MyAppURL "https://github.com/RyuCode-Digital-Solution/AI-Commit"
 #define MyAppExeName "AI-Commit.exe"
 
 [Setup]
