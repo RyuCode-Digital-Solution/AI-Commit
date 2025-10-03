@@ -16,13 +16,16 @@ from src.core.settings_manager import SettingsManager
 from src.gui.settings_dialog import SettingsDialog
 from src.utils.theme import ThemeManager
 from src.utils.helpers import log_message
+from src.gui.constants import UI_STRINGS
 
+
+from src.gui.constants import UI_STRINGS
 
 class AICommit:
     def __init__(self, root):
         self.root = root
-        self.root.title("AI Commit by RyuCode")
-        self.root.geometry("950x750")
+        self.root.title(UI_STRINGS.TITLE)
+        self.root.geometry(UI_STRINGS.GEOMETRY)
         self.root.resizable(True, True)
         
         # Initialize managers
@@ -76,44 +79,44 @@ class AICommit:
         header_frame.columnconfigure(0, weight=1)
         
         # Title
-        title_label = ttk.Label(header_frame, text="AI Commit V1", font=('Helvetica', 18, 'bold'))
+        title_label = ttk.Label(header_frame, text=UI_STRINGS.HEADER_TITLE, font=('Helvetica', 18, 'bold'))
         title_label.grid(row=0, column=0, sticky=tk.W)
         
         # Header buttons (Settings and Theme)
         header_buttons = ttk.Frame(header_frame)
         header_buttons.grid(row=0, column=1, sticky=tk.E)
         
-        ttk.Button(header_buttons, text="⚙️ Settings", command=self.open_settings).pack(side=tk.LEFT, padx=5)
+        ttk.Button(header_buttons, text=UI_STRINGS.SETTINGS_BUTTON, command=self.open_settings).pack(side=tk.LEFT, padx=5)
         
         theme_frame = ttk.Frame(header_buttons)
         theme_frame.pack(side=tk.LEFT, padx=5)
         
-        ttk.Label(theme_frame, text="🌙", font=('Helvetica', 14)).pack(side=tk.LEFT, padx=2)
+        ttk.Label(theme_frame, text=UI_STRINGS.THEME_LABEL, font=('Helvetica', 14)).pack(side=tk.LEFT, padx=2)
         theme_toggle = ttk.Checkbutton(
             theme_frame, 
-            text="Dark Mode", 
+            text=UI_STRINGS.THEME_BUTTON, 
             variable=self.dark_mode, 
             command=self.toggle_theme
         )
         theme_toggle.pack(side=tk.LEFT, padx=5)
         
         # Settings Frame
-        settings_frame = ttk.LabelFrame(main_frame, text="⚙️ Settings", padding="10")
+        settings_frame = ttk.LabelFrame(main_frame, text=UI_STRINGS.SETTINGS_FRAME_TITLE, padding="10")
         settings_frame.grid(row=1, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=5)
         settings_frame.columnconfigure(1, weight=1)
         
         # AI Provider
-        ttk.Label(settings_frame, text="AI Provider:").grid(row=0, column=0, sticky=tk.W, padx=5)
+        ttk.Label(settings_frame, text=UI_STRINGS.AI_PROVIDER_LABEL).grid(row=0, column=0, sticky=tk.W, padx=5)
         ai_frame = ttk.Frame(settings_frame)
         ai_frame.grid(row=0, column=1, sticky=tk.W, padx=5)
-        ttk.Radiobutton(ai_frame, text="Gemini (Free)", variable=self.ai_provider_var, value="gemini").pack(side=tk.LEFT, padx=5)
-        ttk.Radiobutton(ai_frame, text="ChatGPT", variable=self.ai_provider_var, value="chatgpt").pack(side=tk.LEFT, padx=5)
+        ttk.Radiobutton(ai_frame, text=UI_STRINGS.GEMINI_RADIO, variable=self.ai_provider_var, value="gemini").pack(side=tk.LEFT, padx=5)
+        ttk.Radiobutton(ai_frame, text=UI_STRINGS.CHATGPT_RADIO, variable=self.ai_provider_var, value="chatgpt").pack(side=tk.LEFT, padx=5)
         
         # Auto Push
-        ttk.Checkbutton(settings_frame, text="Auto Push to Origin", variable=self.auto_push).grid(row=0, column=2, padx=20, sticky=tk.E)
+        ttk.Checkbutton(settings_frame, text=UI_STRINGS.AUTO_PUSH_CHECKBOX, variable=self.auto_push).grid(row=0, column=2, padx=20, sticky=tk.E)
         
         # Repository Selection Frame
-        repo_frame = ttk.LabelFrame(main_frame, text="📂 Select Repository", padding="10")
+        repo_frame = ttk.LabelFrame(main_frame, text=UI_STRINGS.REPO_FRAME_TITLE, padding="10")
         repo_frame.grid(row=2, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=5)
         repo_frame.columnconfigure(1, weight=1)
         
@@ -121,9 +124,9 @@ class AICommit:
         repo_buttons = ttk.Frame(repo_frame)
         repo_buttons.grid(row=0, column=0, padx=5, sticky=tk.W)
         
-        ttk.Button(repo_buttons, text="🔍 Scan", command=self.scan_repositories).pack(side=tk.LEFT, padx=2)
-        ttk.Button(repo_buttons, text="📁 Browse", command=self.browse_repository).pack(side=tk.LEFT, padx=2)
-        ttk.Button(repo_buttons, text="🔄 Refresh", command=self.load_changed_files).pack(side=tk.LEFT, padx=2)
+        ttk.Button(repo_buttons, text=UI_STRINGS.SCAN_BUTTON, command=self.scan_repositories).pack(side=tk.LEFT, padx=2)
+        ttk.Button(repo_buttons, text=UI_STRINGS.BROWSE_BUTTON, command=self.browse_repository).pack(side=tk.LEFT, padx=2)
+        ttk.Button(repo_buttons, text=UI_STRINGS.REFRESH_BUTTON, command=self.load_changed_files).pack(side=tk.LEFT, padx=2)
         
         # Repository dropdown
         self.repo_combo = ttk.Combobox(repo_frame, textvariable=self.selected_repo, state="readonly")
@@ -131,20 +134,20 @@ class AICommit:
         self.repo_combo.bind('<<ComboboxSelected>>', self.on_repo_selected)
         
         # Files Frame
-        files_frame = ttk.LabelFrame(main_frame, text="📝 Changed Files", padding="10")
+        files_frame = ttk.LabelFrame(main_frame, text=UI_STRINGS.FILES_FRAME_TITLE, padding="10")
         files_frame.grid(row=3, column=0, columnspan=3, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
         
         # File buttons
         file_buttons = ttk.Frame(files_frame)
         file_buttons.pack(fill=tk.X, pady=(0, 5))
-        ttk.Button(file_buttons, text="✅ Select All", command=self.select_all_files, width=15).pack(side=tk.LEFT, padx=2)
-        ttk.Button(file_buttons, text="❌ Clear Selection", command=self.clear_file_selection, width=15).pack(side=tk.LEFT, padx=2)
-        ttk.Button(file_buttons, text="➕ Add to Stage", command=self.add_selected_files, width=15).pack(side=tk.LEFT, padx=2)
+        ttk.Button(file_buttons, text=UI_STRINGS.SELECT_ALL_BUTTON, command=self.select_all_files, width=15).pack(side=tk.LEFT, padx=2)
+        ttk.Button(file_buttons, text=UI_STRINGS.CLEAR_SELECTION_BUTTON, command=self.clear_file_selection, width=15).pack(side=tk.LEFT, padx=2)
+        ttk.Button(file_buttons, text=UI_STRINGS.ADD_TO_STAGE_BUTTON, command=self.add_selected_files, width=15).pack(side=tk.LEFT, padx=2)
         
         # Info label
         self.info_label = ttk.Label(
             files_frame,
-            text="ℹ️ Select files and click 'Add to Stage' before generating commit message",
+            text=UI_STRINGS.INFO_LABEL,
             foreground=self.theme_manager.get_accent_color(),
             font=('Helvetica', 8, 'italic')
         )
@@ -171,7 +174,7 @@ class AICommit:
         scrollbar.config(command=self.files_listbox.yview)
         
         # Commit Message Frame
-        message_frame = ttk.LabelFrame(main_frame, text="💬 Commit Message", padding="10")
+        message_frame = ttk.LabelFrame(main_frame, text=UI_STRINGS.COMMIT_FRAME_TITLE, padding="10")
         message_frame.grid(row=4, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=5)
         
         # Message text area
@@ -189,19 +192,19 @@ class AICommit:
         # Message buttons
         msg_buttons = ttk.Frame(message_frame)
         msg_buttons.pack(fill=tk.X)
-        ttk.Button(msg_buttons, text="🤖 Generate with AI", command=self.auto_add_and_generate, width=20).pack(side=tk.LEFT, padx=2)
-        ttk.Button(msg_buttons, text="🗑️ Clear", command=self.clear_message, width=12).pack(side=tk.LEFT, padx=2)
+        ttk.Button(msg_buttons, text=UI_STRINGS.GENERATE_BUTTON, command=self.auto_add_and_generate, width=20).pack(side=tk.LEFT, padx=2)
+        ttk.Button(msg_buttons, text=UI_STRINGS.CLEAR_BUTTON, command=self.clear_message, width=12).pack(side=tk.LEFT, padx=2)
         
         # Action Buttons
         action_frame = ttk.Frame(main_frame)
         action_frame.grid(row=5, column=0, columnspan=3, pady=10)
         
-        ttk.Button(action_frame, text="✅ Commit & Push", command=self.commit_and_push, width=18).pack(side=tk.LEFT, padx=5)
-        ttk.Button(action_frame, text="💾 Commit Only", command=self.commit_only, width=15).pack(side=tk.LEFT, padx=5)
-        ttk.Button(action_frame, text="❌ Cancel", command=self.root.quit, width=12).pack(side=tk.LEFT, padx=5)
+        ttk.Button(action_frame, text=UI_STRINGS.COMMIT_PUSH_BUTTON, command=self.commit_and_push, width=18).pack(side=tk.LEFT, padx=5)
+        ttk.Button(action_frame, text=UI_STRINGS.COMMIT_ONLY_BUTTON, command=self.commit_only, width=15).pack(side=tk.LEFT, padx=5)
+        ttk.Button(action_frame, text=UI_STRINGS.CANCEL_BUTTON, command=self.root.quit, width=12).pack(side=tk.LEFT, padx=5)
         
         # Log Frame
-        log_frame = ttk.LabelFrame(main_frame, text="📋 Activity Log", padding="5")
+        log_frame = ttk.LabelFrame(main_frame, text=UI_STRINGS.LOG_FRAME_TITLE, padding="5")
         log_frame.grid(row=6, column=0, columnspan=3, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
         
         self.log_text = scrolledtext.ScrolledText(
@@ -216,63 +219,34 @@ class AICommit:
         self.log_text.pack(fill=tk.BOTH, expand=True)
         
         # Status bar
-        self.status_label = ttk.Label(main_frame, text="Ready", relief=tk.SUNKEN, anchor=tk.W)
+        self.status_label = ttk.Label(main_frame, text=UI_STRINGS.STATUS_READY, relief=tk.SUNKEN, anchor=tk.W)
         self.status_label.grid(row=7, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=(5, 0))
 
     def set_app_icon(self):
-        """Set application icon with better path handling for EXE"""
+        """Set application icon."""
         try:
-            # Debug: Print current paths
-            print("Setting application icon...")
-        
-            # Determine if running as EXE or script
             if getattr(sys, 'frozen', False):
-                # Running as EXE - use temporary extraction directory
+                # Running as EXE
                 base_path = sys._MEIPASS
-                print(f"Running as EXE, MEIPASS: {base_path}")
             else:
-                # Running as script - use current directory
-                base_path = os.path.dirname(os.path.abspath(__file__))
-                print(f"Running as script, base path: {base_path}")
-        
-            icon_paths = [
-                os.path.join(base_path, "assets", "icon.ico"),
-                os.path.join(base_path, "assets", "icon.png"),
-                os.path.join(base_path, "icon.ico"),
-                os.path.join(base_path, "icon.png"),
-                "assets/icon.ico",
-                "assets/icon.png",
-                "icon.ico", 
-                "icon.png"
-            ]
-        
-            icon_found = False
-            for path in icon_paths:
-                exists = os.path.exists(path)
-                print(f"Checking: {path} - {'EXISTS' if exists else 'MISSING'}")
-            
-                if exists:
-                    try:
-                        if path.endswith('.ico'):
-                            self.root.iconbitmap(path)
-                            print(f"Successfully set icon from: {path}")
-                            icon_found = True
-                            break
-                        elif path.endswith('.png'):
-                            icon_img = tk.PhotoImage(file=path)
-                            self.root.iconphoto(True, icon_img)
-                            print(f"Successfully set icon from: {path}")
-                            icon_found = True
-                            break
-                    except Exception as icon_error:
-                        print(f"Failed to set icon from {path}: {icon_error}")
-                        continue
-        
-            if not icon_found:
-                print("Warning: No valid icon file found in any location")
-            
+                # Running as script
+                base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+            icon_ico_path = os.path.join(base_path, "assets", "icon.ico")
+            icon_png_path = os.path.join(base_path, "assets", "icon.png")
+
+            if sys.platform == "win32" and os.path.exists(icon_ico_path):
+                self.root.iconbitmap(icon_ico_path)
+                self.log("🖼️ Application icon set from .ico file.")
+            elif os.path.exists(icon_png_path):
+                icon_img = tk.PhotoImage(file=icon_png_path)
+                self.root.iconphoto(True, icon_img)
+                self.log("🖼️ Application icon set from .png file.")
+            else:
+                self.log("⚠️ Could not find application icon.", "warning")
+
         except Exception as e:
-            print(f"Icon setting error: {e}")
+            self.log(f"❌ Failed to set application icon: {e}", "error")
     
     def open_settings(self):
         """Open settings dialog"""
@@ -286,7 +260,7 @@ class AICommit:
         """Browse for specific repository folder"""
         folder = filedialog.askdirectory(
             initialdir=self.settings_manager.get("parent_folder", str(Path.home())),
-            title="Select Git Repository"
+            title=UI_STRINGS.REPO_FRAME_TITLE
         )
         if folder and self.git_manager.is_git_repo(folder):
             # Add to recent repos
@@ -388,7 +362,7 @@ class AICommit:
             messagebox.showwarning("No Repositories", 
                 f"No git repositories found in:\n{parent_folder}\n\nTry changing the parent folder in Settings.")
         
-        self.set_status("Ready")
+        self.set_status(UI_STRINGS.STATUS_READY)
     
     def on_repo_selected(self, event):
         """Handle repository selection"""
@@ -504,7 +478,7 @@ class AICommit:
             else:
                 messagebox.showerror("Error", "Failed to stage files. Check Activity Log for details.")
         
-        self.set_status("Ready")
+        self.set_status(UI_STRINGS.STATUS_READY)
         self.root.after(500, self.load_changed_files)
     
     def auto_add_and_generate(self):
@@ -542,7 +516,7 @@ class AICommit:
             self.root.after(200, self.generate_commit_message)
         else:
             messagebox.showwarning("No Files", "No files were staged")
-            self.set_status("Ready")
+            self.set_status(UI_STRINGS.STATUS_READY)
     
     def generate_commit_message(self):
         """Generate commit message using AI"""
@@ -585,7 +559,7 @@ class AICommit:
             self.root.after(0, self._show_error, str(e))
         finally:
             self.root.after(0, lambda: setattr(self, '_is_generating', False))
-            self.root.after(0, lambda: self.set_status("Ready"))
+            self.root.after(0, lambda: self.set_status(UI_STRINGS.STATUS_READY))
     
     def _update_message(self, message: str):
         """Update commit message (called from main thread)"""
@@ -593,14 +567,14 @@ class AICommit:
         self.message_text.insert(1.0, message)
         self.log("✅ Commit message generated successfully", "success")
         self._is_generating = False
-        self.set_status("Ready")
+        self.set_status(UI_STRINGS.STATUS_READY)
     
     def _show_error(self, error: str):
         """Show error message (called from main thread)"""
         self.log(f"❌ Error: {error}", "error")
         messagebox.showerror("Error", f"Failed to generate message:\n{error}")
         self._is_generating = False
-        self.set_status("Ready")
+        self.set_status(UI_STRINGS.STATUS_READY)
     
     def clear_message(self):
         """Clear commit message"""
@@ -644,7 +618,7 @@ class AICommit:
         if not success:
             self.log(f"❌ Commit failed: {output}", "error")
             messagebox.showerror("Commit Failed", f"Failed to commit:\n{output}")
-            self.set_status("Ready")
+            self.set_status(UI_STRINGS.STATUS_READY)
             return
         
         self.log("✅ Commit successful!", "success")
@@ -670,6 +644,6 @@ class AICommit:
         else:
             messagebox.showinfo("Success", "Commit completed successfully!")
         
-        self.set_status("Ready")
+        self.set_status(UI_STRINGS.STATUS_READY)
         self.clear_message()
         self.load_changed_files()
