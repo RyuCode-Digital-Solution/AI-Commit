@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=AI-Commit
+Comment=Generate commit messages with AI
+Exec=/usr/local/bin/ai-commit
+Icon=ai-commit
+Terminal=false
+Type=Application
+Categories=Development;
